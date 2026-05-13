@@ -3,240 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Almoxarifado | Catalent Maintenance</title>
+    <title>Sistema de Manutenção | Catalent</title>
     <style>
         :root {
             --catalent-blue: #00467f;
-            --red: #ff4d4d;
-            --yellow: #ffcc00;
-            --green: #2ecc71;
-            --gray: #f4f4f9;
+            --red: #d63031;
+            --yellow: #feca57;
+            --green: #1dd1a1;
+            --dark: #2d3436;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--gray);
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #eef2f7;
             margin: 0;
             padding: 20px;
+            color: var(--dark);
         }
 
         header {
-            background-color: var(--catalent-blue);
+            background: var(--catalent-blue);
             color: white;
-            padding: 1rem;
-            text-align: center;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Formulário */
-        .form-section {
-            background: white;
             padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+        }
+
+        /* Painel de Alerta Crítico */
+        #alertCenter {
+            background: #fff;
+            border-left: 10px solid var(--red);
+            padding: 15px;
+            margin-bottom: 25px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none; /* Só aparece se houver itens no vermelho */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #alertCenter h2 { color: var(--red); margin-top: 0; font-size: 1.2rem; }
+        .alert-item { color: #c0392b; font-weight: bold; margin-bottom: 5px; }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* Formulário Detalhado */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 30px;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
 
         input, select, button {
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 14px;
         }
 
-        button {
-            background-color: var(--catalent-blue);
+        button.btn-add {
+            background: var(--catalent-blue);
             color: white;
+            border: none;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
+            grid-column: span 1;
         }
 
-        button:hover {
-            opacity: 0.8;
-        }
-
-        /* Prateleiras */
-        .shelves-container {
+        /* Grid de Prateleiras */
+        .shelves-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
         }
 
-        .shelf {
-            background: white;
-            border-top: 5px solid var(--catalent-blue);
-            border-radius: 8px;
+        .shelf-card {
+            background: #fff;
+            border-radius: 10px;
             padding: 15px;
-            min-height: 200px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-top: 6px solid var(--catalent-blue);
+            min-height: 250px;
         }
 
-        .shelf h3 {
-            margin-top: 0;
-            border-bottom: 1px solid #eee;
+        .shelf-title {
+            font-size: 1.1rem;
+            border-bottom: 2px solid #f0f0f0;
             padding-bottom: 10px;
-        }
-
-        /* Itens */
-        .item-card {
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
+        }
+
+        /* Estilo dos Itens */
+        .item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .item:hover { transform: scale(1.02); }
+
+        .status-red { 
+            border-left: 8px solid var(--red); 
+            background: #fff5f5;
+            animation: pulse 2s infinite;
+        }
+        .status-yellow { border-left: 8px solid var(--yellow); background: #fffdf2; }
+        .status-green { border-left: 8px solid var(--green); background: #f6fff9; }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(214, 48, 49, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0); }
+        }
+
+        .item-details { font-size: 0.85rem; color: #555; line-height: 1.4; }
+        .item-name { font-weight: bold; font-size: 1rem; color: var(--dark); display: block; }
+        .item-code { color: var(--catalent-blue); font-family: monospace; font-weight: bold; }
+
+        .qty-controls {
+            display: flex;
             align-items: center;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            border-left: 8px solid #ccc;
-            background: #fafafa;
+            gap: 8px;
+            margin-top: 10px;
         }
 
-        .status-red { border-left-color: var(--red); background: #fff5f5; }
-        .status-yellow { border-left-color: var(--yellow); background: #fffdf0; }
-        .status-green { border-left-color: var(--green); background: #f5fff8; }
-
-        .item-info b { display: block; font-size: 0.9em; }
-        .item-info span { font-size: 0.8em; color: #666; }
-
-        .qty-badge {
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 20px;
+        .btn-qty {
             background: #eee;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
-        .delete-btn {
+        .btn-delete {
             background: none;
-            color: #ff4d4d;
             border: none;
+            color: #ccc;
             cursor: pointer;
-            font-size: 1.2em;
+            float: right;
         }
+        .btn-delete:hover { color: var(--red); }
+
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Web Almoxarifado - Manutenção Catalent</h1>
+    <h1>Web Almoxarifado | Manutenção Catalent</h1>
 </header>
 
 <div class="container">
-    <section class="form-section">
-        <h3>Adicionar Nova Peça</h3>
+    <section id="alertCenter">
+        <h2>⚠️ ALERTA DE COMPRA IMEDIATA</h2>
+        <div id="criticalList"></div>
+    </section>
+
+    <section class="card">
+        <h3>Cadastrar Peça / Componente</h3>
         <div class="form-grid">
-            <input type="text" id="partName" placeholder="Nome da Peça" required>
-            <input type="text" id="protheusCode" placeholder="Código Protheus" required>
-            <select id="shelfSelect">
+            <input type="text" id="name" placeholder="Nome da Peça (Ex: Rolamento)">
+            <input type="text" id="code" placeholder="Código Protheus">
+            <input type="text" id="brand" placeholder="Marca/Fabricante">
+            <input type="text" id="spec" placeholder="Especificação (Ex: 2RS, Inox)">
+            <select id="shelf">
                 </select>
-            <input type="number" id="currentQty" placeholder="Qtd Atual" required>
-            <input type="number" id="minRed" placeholder="Limite Vermelho (≤)" required title="Abaixo disso fica vermelho">
-            <input type="number" id="minYellow" placeholder="Limite Amarelo (≤)" required title="Abaixo disso fica amarelo">
-            <button onclick="addItem()">Adicionar</button>
+            <input type="number" id="qty" placeholder="Qtd Inicial">
+            <input type="number" id="red" placeholder="Lim. Vermelho (Compra)">
+            <input type="number" id="yellow" placeholder="Lim. Amarelo (Atenção)">
+            <button class="btn-add" onclick="addItem()">Salvar no Estoque</button>
         </div>
     </section>
 
-    <div class="shelves-container" id="shelvesDisplay">
-        </div>
+    <div class="shelves-grid" id="shelvesGrid"></div>
 </div>
 
 <script>
-    let inventory = JSON.parse(localStorage.getItem('catalent_inventory')) || [];
+    let db = JSON.parse(localStorage.getItem('catalent_pro_db')) || [];
 
-    // Inicializa as 12 prateleiras
-    function initApp() {
-        const shelfSelect = document.getElementById('shelfSelect');
+    function init() {
+        const shelfSelect = document.getElementById('shelf');
         for (let i = 1; i <= 12; i++) {
-            let option = new Option(`Prateleira ${i}`, i);
-            shelfSelect.add(option);
+            shelfSelect.add(new Option(`Prateleira ${i}`, i));
         }
-        renderInventory();
+        render();
     }
 
     function addItem() {
-        const item = {
+        const newItem = {
             id: Date.now(),
-            name: document.getElementById('partName').value,
-            code: document.getElementById('protheusCode').value,
-            shelf: document.getElementById('shelfSelect').value,
-            qty: parseInt(document.getElementById('currentQty').value),
-            limitRed: parseInt(document.getElementById('minRed').value),
-            limitYellow: parseInt(document.getElementById('minYellow').value)
+            name: document.getElementById('name').value,
+            code: document.getElementById('code').value,
+            brand: document.getElementById('brand').value,
+            spec: document.getElementById('spec').value,
+            shelf: document.getElementById('shelf').value,
+            qty: parseInt(document.getElementById('qty').value) || 0,
+            limitRed: parseInt(document.getElementById('red').value) || 0,
+            limitYellow: parseInt(document.getElementById('yellow').value) || 0
         };
 
-        if(!item.name || !item.code) return alert("Preencha os campos obrigatórios!");
+        if(!newItem.name || !newItem.code) return alert("Preencha Nome e Código Protheus!");
 
-        inventory.push(item);
-        saveAndRender();
+        db.push(newItem);
+        save();
         clearForm();
     }
 
-    function deleteItem(id) {
-        inventory = inventory.filter(item => item.id !== id);
-        saveAndRender();
+    function updateQty(id, change) {
+        const item = db.find(i => i.id === id);
+        if(item) {
+            item.qty = Math.max(0, item.qty + change);
+            save();
+        }
     }
 
-    function saveAndRender() {
-        localStorage.setItem('catalent_inventory', JSON.stringify(inventory));
-        renderInventory();
+    function deleteItem(id) {
+        if(confirm("Deseja remover esta peça do sistema?")) {
+            db = db.filter(i => i.id !== id);
+            save();
+        }
+    }
+
+    function save() {
+        localStorage.setItem('catalent_pro_db', JSON.stringify(db));
+        render();
     }
 
     function clearForm() {
-        document.getElementById('partName').value = '';
-        document.getElementById('protheusCode').value = '';
-        document.getElementById('currentQty').value = '';
-        document.getElementById('minRed').value = '';
-        document.getElementById('minYellow').value = '';
+        ['name', 'code', 'brand', 'spec', 'qty', 'red', 'yellow'].forEach(id => document.getElementById(id).value = '');
     }
 
-    function getStatusClass(qty, red, yellow) {
-        if (qty <= red) return 'status-red';
-        if (qty <= yellow) return 'status-yellow';
-        return 'status-green';
-    }
+    function render() {
+        const grid = document.getElementById('shelvesGrid');
+        const alertBox = document.getElementById('alertCenter');
+        const criticalList = document.getElementById('criticalList');
+        
+        grid.innerHTML = '';
+        criticalList.innerHTML = '';
+        let hasCritical = false;
 
-    function renderInventory() {
-        const display = document.getElementById('shelvesDisplay');
-        display.innerHTML = '';
-
+        // Criar Prateleiras
         for (let i = 1; i <= 12; i++) {
+            const shelfItems = db.filter(item => item.shelf == i);
             const shelfDiv = document.createElement('div');
-            shelfDiv.className = 'shelf';
-            shelfDiv.innerHTML = `<h3>Prateleira ${i}</h3>`;
-            
-            const shelfItems = inventory.filter(item => item.shelf == i);
-            
+            shelfDiv.className = 'shelf-card';
+            shelfDiv.innerHTML = `<div class="shelf-title">Prateleira ${i} <span>${shelfItems.length} itens</span></div>`;
+
             shelfItems.forEach(item => {
-                const statusClass = getStatusClass(item.qty, item.limitRed, item.limitYellow);
+                let statusClass = 'status-green';
+                if (item.qty <= item.limitRed) {
+                    statusClass = 'status-red';
+                    hasCritical = true;
+                    criticalList.innerHTML += `<div class="alert-item">🚨 COMPRAR: ${item.name} (Cód: ${item.code}) - Restam apenas ${item.qty} un na Prateleira ${item.shelf}</div>`;
+                } else if (item.qty <= item.limitYellow) {
+                    statusClass = 'status-yellow';
+                }
+
                 const itemEl = document.createElement('div');
-                itemEl.className = `item-card ${statusClass}`;
+                itemEl.className = `item ${statusClass}`;
                 itemEl.innerHTML = `
-                    <div class="item-info">
-                        <b>${item.name}</b>
-                        <span>Cód: ${item.code}</span>
+                    <button class="btn-delete" onclick="deleteItem(${item.id})">🗑️</button>
+                    <span class="item-name">${item.name}</span>
+                    <div class="item-details">
+                        <b>Protheus:</b> <span class="item-code">${item.code}</span><br>
+                        <b>Marca:</b> ${item.brand || '---'} | <b>Spec:</b> ${item.spec || '---'}<br>
                     </div>
-                    <div style="display:flex; align-items:center; gap:10px">
-                        <div class="qty-badge">${item.qty} un</div>
-                        <button class="delete-btn" onclick="deleteItem(${item.id})">×</button>
+                    <div class="qty-controls">
+                        <button class="btn-qty" onclick="updateQty(${item.id}, -1)">-</button>
+                        <strong>${item.qty} un</strong>
+                        <button class="btn-qty" onclick="updateQty(${item.id}, 1)">+</button>
                     </div>
                 `;
                 shelfDiv.appendChild(itemEl);
             });
-
-            display.appendChild(shelfDiv);
+            grid.appendChild(shelfDiv);
         }
+
+        alertBox.style.display = hasCritical ? 'block' : 'none';
     }
 
-    initApp();
+    init();
 </script>
 
 </body>
