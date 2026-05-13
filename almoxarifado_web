@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Almoxarifado | Catalent Maintenance</title>
+    <style>
+        :root {
+            --catalent-blue: #00467f;
+            --red: #ff4d4d;
+            --yellow: #ffcc00;
+            --green: #2ecc71;
+            --gray: #f4f4f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gray);
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--catalent-blue);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Formulário */
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: var(--catalent-blue);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        /* Prateleiras */
+        .shelves-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .shelf {
+            background: white;
+            border-top: 5px solid var(--catalent-blue);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .shelf h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Itens */
+        .item-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 8px solid #ccc;
+            background: #fafafa;
+        }
+
+        .status-red { border-left-color: var(--red); background: #fff5f5; }
+        .status-yellow { border-left-color: var(--yellow); background: #fffdf0; }
+        .status-green { border-left-color: var(--green); background: #f5fff8; }
+
+        .item-info b { display: block; font-size: 0.9em; }
+        .item-info span { font-size: 0.8em; color: #666; }
+
+        .qty-badge {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #eee;
+        }
+
+        .delete-btn {
+            background: none;
+            color: #ff4d4d;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Web Almoxarifado - Manutenção Catalent</h1>
+</header>
+
+<div class="container">
+    <section class="form-section">
+        <h3>Adicionar Nova Peça</h3>
+        <div class="form-grid">
+            <input type="text" id="partName" placeholder="Nome da Peça" required>
+            <input type="text" id="protheusCode" placeholder="Código Protheus" required>
+            <select id="shelfSelect">
+                </select>
+            <input type="number" id="currentQty" placeholder="Qtd Atual" required>
+            <input type="number" id="minRed" placeholder="Limite Vermelho (≤)" required title="Abaixo disso fica vermelho">
+            <input type="number" id="minYellow" placeholder="Limite Amarelo (≤)" required title="Abaixo disso fica amarelo">
+            <button onclick="addItem()">Adicionar</button>
+        </div>
+    </section>
+
+    <div class="shelves-container" id="shelvesDisplay">
+        </div>
+</div>
+
+<script>
+    let inventory = JSON.parse(localStorage.getItem('catalent_inventory')) || [];
+
+    // Inicializa as 12 prateleiras
+    function initApp() {
+        const shelfSelect = document.getElementById('shelfSelect');
+        for (let i = 1; i <= 12; i++) {
+            let option = new Option(`Prateleira ${i}`, i);
+            shelfSelect.add(option);
+        }
+        renderInventory();
+    }
+
+    function addItem() {
+        const item = {
+            id: Date.now(),
+            name: document.getElementById('partName').value,
+            code: document.getElementById('protheusCode').value,
+            shelf: document.getElementById('shelfSelect').value,
+            qty: parseInt(document.getElementById('currentQty').value),
+            limitRed: parseInt(document.getElementById('minRed').value),
+            limitYellow: parseInt(document.getElementById('minYellow').value)
+        };
+
+        if(!item.name || !item.code) return alert("Preencha os campos obrigatórios!");
+
+        inventory.push(item);
+        saveAndRender();
+        clearForm();
+    }
+
+    function deleteItem(id) {
+        inventory = inventory.filter(item => item.id !== id);
+        saveAndRender();
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('catalent_inventory', JSON.stringify(inventory));
+        renderInventory();
+    }
+
+    function clearForm() {
+        document.getElementById('partName').value = '';
+        document.getElementById('protheusCode').value = '';
+        document.getElementById('currentQty').value = '';
+        document.getElementById('minRed').value = '';
+        document.getElementById('minYellow').value = '';
+    }
+
+    function getStatusClass(qty, red, yellow) {
+        if (qty <= red) return 'status-red';
+        if (qty <= yellow) return 'status-yellow';
+        return 'status-green';
+    }
+
+    function renderInventory() {
+        const display = document.getElementById('shelvesDisplay');
+        display.innerHTML = '';
+
+        for (let i = 1; i <= 12; i++) {
+            const shelfDiv = document.createElement('div');
+            shelfDiv.className = 'shelf';
+            shelfDiv.innerHTML = `<h3>Prateleira ${i}</h3>`;
+            
+            const shelfItems = inventory.filter(item => item.shelf == i);
+            
+            shelfItems.forEach(item => {
+                const statusClass = getStatusClass(item.qty, item.limitRed, item.limitYellow);
+                const itemEl = document.createElement('div');
+                itemEl.className = `item-card ${statusClass}`;
+                itemEl.innerHTML = `
+                    <div class="item-info">
+                        <b>${item.name}</b>
+                        <span>Cód: ${item.code}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px">
+                        <div class="qty-badge">${item.qty} un</div>
+                        <button class="delete-btn" onclick="deleteItem(${item.id})">×</button>
+                    </div>
+                `;
+                shelfDiv.appendChild(itemEl);
+            });
+
+            display.appendChild(shelfDiv);
+        }
+    }
+
+    initApp();
+</script>
+
+</body>
+</html>
