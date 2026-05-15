@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalent | Gestão de Manutenção</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <div id="login-page" class="auth-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-icon"><i class="fa-solid fa-flask-vial"></i></div>
+                <div>
+                    <h1>Catalent <span>Pharma Solutions</span></h1>
+                    <p>Gestão de Estoque • Manutenção</p>
+                </div>
+            </div>
+            <form id="login-form">
+                <div class="input-group">
+                    <label>USUÁRIO</label>
+                    <div class="input-field">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="login-user" placeholder="Digite seu usuário" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>SENHA</label>
+                    <div class="input-field">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="login-pass" placeholder="Digite sua senha" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fa-solid fa-right-to-bracket"></i> Entrar
+                </button>
+            </form>
+            <p class="login-footer">Acesso restrito - Solicite credenciais ao administrador</p>
+            <span class="version-tag">© Catalent - Manutenção - v1.0</span>
+        </div>
+    </div>
+
+    <div id="app-container" style="display: none;">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo-icon-sm"><i class="fa-solid fa-flask-vial"></i></div>
+                <div>
+                    <h3>Catalent</h3>
+                    <p>Manutenção</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <button class="menu-item active" data-target="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </button>
+                <button class="menu-item" data-target="almoxarifado">
+                    <i class="fa-solid fa-warehouse"></i> Almoxarifado
+                </button>
+                <button class="menu-item adm-only" data-target="cadastrar-produto">
+                    <i class="fa-solid fa-plus"></i> Cadastrar Produto
+                </button>
+                <button class="menu-item" data-target="produtos">
+                    <i class="fa-solid fa-boxes-stacked"></i> Produtos
+                </button>
+                <button class="menu-item adm-only" data-target="usuarios">
+                    <i class="fa-solid fa-users"></i> Usuários
+                </button>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="user-info-card">
+                    <div class="user-avatar"><i class="fa-solid fa-circle-user"></i></div>
+                    <div class="user-text">
+                        <strong id="logged-username">adm1</strong>
+                        <span id="logged-userlevel">ADM</span>
+                    </div>
+                    <button id="btn-logout" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h2 id="current-page-title">Dashboard</h2>
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="global-search" placeholder="Buscar produto, código, marca...">
+                </div>
+            </header>
+
+            <section id="dashboard" class="main-section active">
+                <p class="section-subtitle">Visão geral do estoque de manutenção</p>
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon blue"><i class="fa-solid fa-box"></i></div>
+                        <div><span>TOTAL DE ITENS</span><h2 id="kpi-total">0</h2></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div><span>ESTOQUE CRÍTICO</span><h2 id="kpi-red">0</h2></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon yellow"><i class="fa-solid fa-circle-exclamation"></i></div>
+                        <div><span>ATENÇÃO</span><h2 id="kpi-yellow">0</h2></div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon green"><i class="fa-solid fa-check-circle"></i></div>
+                        <div><span>SAUDÁVEIS</span><h2 id="kpi-green">0</h2></div>
+                    </div>
+                </div>
+
+                <div class="data-panel">
+                    <div class="panel-header"><i class="fa-solid fa-bell"></i> Urgência • Estoque crítico</div>
+                    <div class="table-wrapper">
+                        <table class="main-table">
+                            <thead>
+                                <tr><th>PRODUTO</th><th>MARCA</th><th>CÓD. PROTHEUS</th><th>PRATELEIRA</th><th>QTD</th><th>STATUS</th></tr>
+                            </thead>
+                            <tbody id="urgent-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="almoxarifado" class="main-section">
+                <p class="section-subtitle">Prateleiras e produtos vinculados</p>
+                <div class="shelves-grid" id="shelves-container"></div>
+            </section>
+
+            <section id="cadastrar-produto" class="main-section">
+                <p class="section-subtitle">Adicione novos itens ao estoque</p>
+                <div class="data-panel form-panel">
+                    <div class="panel-header"><i class="fa-solid fa-plus-circle"></i> Cadastro de Produto</div>
+                    <form id="product-form" class="grid-form">
+                        <div class="f-group span-2"><label>NOME</label><input type="text" id="p-name" required></div>
+                        <div class="f-group span-2"><label>ESPECIFICAÇÃO</label><input type="text" id="p-spec" required></div>
+                        <div class="f-group"><label>MARCA</label><input type="text" id="p-brand" required></div>
+                        <div class="f-group"><label>CÓDIGO PROTHEUS</label><input type="text" id="p-code" required></div>
+                        <div class="f-group">
+                            <label>PRATELEIRA</label>
+                            <select id="p-shelf" required></select>
+                        </div>
+                        <div class="f-group"><label>QUANTIDADE ATUAL</label><input type="number" id="p-qty" required></div>
+                        <div class="f-group"><label>LIMITE VERMELHO</label><input type="number" id="p-lred" required></div>
+                        <div class="f-group"><label>LIMITE AMARELO</label><input type="number" id="p-lyellow" required></div>
+                        <div class="form-btns">
+                            <button type="reset" class="btn-clear"><i class="fa-solid fa-rotate-left"></i> Limpar</button>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Salvar produto</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="produtos" class="main-section">
+                <p class="section-subtitle">Lista completa de itens cadastrados</p>
+                <div class="data-panel">
+                    <div class="panel-header"><i class="fa-solid fa-boxes-stacked"></i> Todos os Produtos</div>
+                    <div class="table-wrapper">
+                        <table class="main-table">
+                            <thead>
+                                <tr><th>NOME</th><th>ESPECIFICAÇÃO</th><th>MARCA</th><th>CÓD.</th><th>PRAT.</th><th>QTD</th><th>VERMELHO</th><th>AMARELO</th><th>AÇÕES</th></tr>
+                            </thead>
+                            <tbody id="inventory-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="usuarios" class="main-section">
+                <p class="section-subtitle">Gestão de acessos do sistema</p>
+                <div class="data-panel form-panel">
+                    <div class="panel-header"><i class="fa-solid fa-user-plus"></i> Cadastrar Usuário</div>
+                    <form id="user-form" class="grid-form">
+                        <div class="f-group"><label>USUÁRIO</label><input type="text" id="u-name" required></div>
+                        <div class="f-group"><label>SENHA</label><input type="password" id="u-pass" required></div>
+                        <div class="f-group">
+                            <label>NÍVEL DE ACESSO</label>
+                            <select id="u-level">
+                                <option value="COMUM">COMUM (apenas visualização)</option>
+                                <option value="ADM">ADM (acesso total)</option>
+                            </select>
+                        </div>
+                        <div class="form-btns">
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-user-check"></i> Criar usuário</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="data-panel mt-20">
+                    <div class="panel-header"><i class="fa-solid fa-users"></i> Usuários cadastrados</div>
+                    <div class="table-wrapper">
+                        <table class="main-table">
+                            <thead><tr><th>USUÁRIO</th><th>NÍVEL</th><th>AÇÕES</th></tr></thead>
+                            <tbody id="user-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
