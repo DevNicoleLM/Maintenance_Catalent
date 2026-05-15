@@ -253,5 +253,5 @@ function deleteUser(name) {
 }
 
 document.getElementById('global-search').addEventListener('input', renderAll);
-
+//commit
 init();
