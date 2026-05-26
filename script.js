@@ -16,11 +16,12 @@ function init() {
         storage.set(DB_USER, users);
     }
 
-    // Popular Select de Prateleiras
+    // Popular Select de Prateleiras (Atualizado para 13)
     const select = document.getElementById('p-shelf');
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 13; i++) {
         const opt = document.createElement('option');
-        opt.value = i; opt.textContent = `Prateleira ${i.toString().padStart(2, '0')}`;
+        opt.value = i; 
+        opt.textContent = `Prateleira ${i.toString().padStart(2, '0')}`;
         select.appendChild(opt);
     }
 
@@ -164,7 +165,8 @@ function renderShelves(prods) {
     const container = document.getElementById('shelves-container');
     container.innerHTML = '';
 
-    for (let i = 1; i <= 12; i++) {
+    // Atualizado para renderizar até 13 prateleiras
+    for (let i = 1; i <= 13; i++) {
         const shelfProds = prods.filter(p => Number(p.shelf) === i);
         const card = document.createElement('div');
         card.className = 'shelf-card';
@@ -253,5 +255,4 @@ function deleteUser(name) {
 }
 
 document.getElementById('global-search').addEventListener('input', renderAll);
-//commit
 init();
