@@ -170,51 +170,55 @@ body.is-adm .adm-only { display: flex !important; }
     border-collapse: collapse;
 }
 /* ==========================================================================
-   REGRAS DE RESPONSIVIDADE PARA CELULARES (TELAS ATÉ 768px)
+   SUPER RESPONSIVO & COMPACTO PARA CELULARES (TELAS ATÉ 768px)
    ========================================================================== */
 @media (max-width: 768px) {
     
-    /* 1. Ajuste do Container Principal: Muda de Grid (Lado a Lado) para Bloco (Empilhado) */
+    /* Zera margens excessivas do corpo para ganhar espaço nas laterais */
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 12px !important; /* Diminui a fonte base do sistema */
+    }
+
     #app-container {
         display: flex !important;
         flex-direction: column;
         min-height: 100vh;
     }
 
-    /* 2. Barra Lateral (Sidebar) vira uma Barra Superior no celular */
+    /* --- SIDEBAR COMPACTA --- */
     .sidebar {
         width: 100% !important;
         height: auto !important;
         position: relative;
-        padding: 15px;
+        padding: 8px 12px !important; /* Menos espaço desperdiçado */
         flex-direction: column;
-        gap: 15px;
+        gap: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
     .sidebar-brand {
         margin-bottom: 0;
         justify-content: center;
+        font-size: 16px !important; /* Título menor */
     }
 
-    /* Menu lateral vira botões lado a lado com rolagem horizontal se não couber */
     .sidebar-menu {
         display: flex;
         flex-direction: row;
-        gap: 8px;
+        gap: 4px;
         overflow-x: auto;
         width: 100%;
-        padding-bottom: 5px;
+        padding-bottom: 3px;
         white-space: nowrap;
     }
 
-    .sidebar-menu::-webkit-scrollbar {
-        height: 4px;
-    }
-
     .menu-item {
-        padding: 10px 15px;
-        font-size: 13px;
+        padding: 6px 10px !important; /* Botões do menu menores */
+        font-size: 11px !important;
         justify-content: center;
+        border-radius: 4px !important;
     }
 
     .sidebar-user {
@@ -224,58 +228,93 @@ body.is-adm .adm-only { display: flex !important; }
 
     .user-info-card {
         justify-content: center;
-        padding: 10px;
+        padding: 6px !important;
+        font-size: 11px !important;
     }
 
-    /* 3. Conteúdo Principal */
+    /* --- CONTEÚDO PRINCIPAL --- */
     .main-content {
-        padding: 15px !important;
+        padding: 10px !important; /* Encolhe as bordas brancas/vazias da tela */
     }
 
     .content-header {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        margin-bottom: 20px;
+        align-items: stretch !important;
+        gap: 8px;
+        margin-bottom: 12px !important;
+    }
+
+    #current-page-title {
+        font-size: 16px !important;
+        text-align: center;
     }
 
     .search-box {
         width: 100% !important;
     }
+    
+    .search-box input {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+    }
 
-    /* 4. Grid de KPIs (Total, Crítico, Atenção, Saudável) */
+    /* --- MINI KPIS --- */
     .kpi-grid {
-        grid-template-columns: repeat(2, 1fr) !important; /* Fica de 2 em 2 no celular */
-        gap: 10px !important;
+        grid-template-columns: repeat(2, 1fr) !important; 
+        gap: 6px !important;
+        margin-bottom: 12px !important;
     }
 
     .kpi-card {
-        padding: 12px !important;
+        padding: 8px !important; /* Cards mais achatados */
+        text-align: center;
+    }
+
+    .kpi-card h3 {
+        font-size: 10px !important;
     }
 
     .kpi-card h2 {
-        font-size: 20px !important;
+        font-size: 16px !important; /* Números menores */
+        margin-top: 2px !important;
     }
 
-    /* 5. Tabelas Responsivas (Garante que rolem para o lado sem quebrar o layout da tela) */
+    /* --- TABELAS ULTRA COMPACTAS (SEM ZOOM) --- */
     .table-wrapper {
         overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch;
-        margin-top: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
+        margin-top: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
     }
 
     .main-table th, .main-table td {
-        padding: 10px 12px !important;
-        font-size: 13px !important;
-        white-space: nowrap; /* Evita que o texto quebre em mil linhas */
+        padding: 6px 8px !important; /* Células bem coladinhas e baixas */
+        font-size: 11px !important; /* Texto menor para caber mais dados */
     }
 
-    /* 6. Formulários (Cadastro de Produto e Usuário) */
+    /* Botões de + e - em tamanho mini para caber no dedo sem esticar a linha */
+    .btn-action {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 10px !important;
+    }
+
+    /* --- FORMULÁRIOS ENXUTOS --- */
     .grid-form {
-        grid-template-columns: 1fr !important; /* Tudo vira uma única coluna para caber no dedo */
-        gap: 15px !important;
+        grid-template-columns: 1fr !important; 
+        gap: 8px !important;
+        padding: 10px !important;
+    }
+
+    .f-group label {
+        font-size: 11px !important;
+        margin-bottom: 2px !important;
+    }
+
+    .f-group input, .f-group select {
+        padding: 6px !important;
+        font-size: 12px !important;
+        height: auto !important;
     }
 
     .f-group.span-2 {
@@ -283,32 +322,53 @@ body.is-adm .adm-only { display: flex !important; }
     }
 
     .form-btns {
-        flex-direction: column-reverse; /* Botão de salvar fica no topo para o polegar alcançar fácil */
-        gap: 10px;
+        flex-direction: column-reverse; 
+        gap: 6px;
+        margin-top: 8px;
     }
 
     .form-btns button {
         width: 100% !important;
-        justify-content: center;
+        padding: 8px !important;
+        font-size: 12px !important;
     }
 
-    /* 7. Grid do Almoxarifado (Prateleiras) */
+    /* --- PRATELEIRAS DO ALMOXARIFADO --- */
     .shelves-grid {
-        grid-template-columns: 1fr !important; /* Uma prateleira embaixo da outra */
-        gap: 12px !important;
+        grid-template-columns: 1fr !important; 
+        gap: 8px !important;
     }
 
-    /* 8. Filtros do Histórico */
+    .shelf-card {
+        margin-bottom: 0 !important;
+    }
+
+    .shelf-top {
+        padding: 6px 10px !important;
+    }
+
+    .shelf-id {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 11px !important;
+    }
+
+    .shelf-info h4 {
+        font-size: 12px !important;
+    }
+
+    .shelf-info p {
+        font-size: 10px !important;
+    }
+
+    /* --- FILTROS HISTÓRICO --- */
     .history-filters {
         flex-direction: column !important;
-        gap: 10px !important;
+        gap: 6px !important;
+        padding: 8px !important;
     }
 
     .filter-group {
-        width: 100% !important;
-    }
-
-    .filter-group input, .filter-group select {
         width: 100% !important;
     }
 }
