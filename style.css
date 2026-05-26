@@ -90,7 +90,7 @@ body { background-color: var(--bg-dark); color: var(--text-main); overflow: hidd
 .pill-green { background: rgba(34,197,94,0.2); color: var(--green); }
 
 /* Almoxarifado Shelves */
-.shelves-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.shelves-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; align-items: start; }
 .shelf-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; transition: 0.3s; }
 .shelf-top { padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; }
 .shelf-id { background: var(--accent-gradient); width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-weight: bold; }
@@ -115,3 +115,57 @@ body { background-color: var(--bg-dark); color: var(--text-main); overflow: hidd
 .adm-only { display: none; }
 /*commit*/
 body.is-adm .adm-only { display: flex !important; }
+/* Botões de Movimentação */
+.btn-action { width: 30px; height: 30px; border-radius: 8px; border: none; color: white; cursor: pointer; display: grid; place-items: center; transition: 0.2s; }
+.btn-out { background: rgba(234,179,8,0.8); } /* Amarelo escuro */
+.btn-in { background: rgba(59,130,246,0.8); } /* Azul */
+.btn-action:hover { opacity: 0.8; transform: scale(1.05); }
+/* --- FILTROS E TABELA DO HISTÓRICO --- */
+.history-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Faz quebrar a linha no celular */
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    background: var(--bg-dark); /* Troque pela cor de fundo do seu input */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0 12px;
+    flex: 1; /* Faz os campos dividirem o espaço igualmente */
+    min-width: 200px;
+}
+
+.filter-group i {
+    color: var(--text-dim);
+    font-size: 14px;
+}
+
+.filter-group input, 
+.filter-group select {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    padding: 12px;
+    width: 100%;
+    outline: none;
+}
+
+.filter-group select option {
+    background: #1e1e24; /* Cor de fundo do dropdown */
+    color: #fff;
+}
+
+/* Força a tabela a usar 100% do espaço do card */
+.history-table-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Adiciona barra de rolagem no celular se a tabela for muito larga */
+}
+
+.history-table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}

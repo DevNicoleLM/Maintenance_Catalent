@@ -123,6 +123,36 @@
                         </table>
                     </div>
                 </div>
+
+                <div class="data-panel mt-20 adm-only">
+                    <div class="panel-header"><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Movimentações</div>
+                    
+                    <div class="history-filters">
+                        <div class="filter-group">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="hist-search" placeholder="Pesquisar em tudo...">
+                        </div>
+                        <div class="filter-group">
+                            <i class="fa-solid fa-user"></i>
+                            <select id="hist-user-filter">
+                                <option value="">Todos os Usuários</option>
+                                </select>
+                        </div>
+                        <div class="filter-group">
+                            <i class="fa-solid fa-box"></i>
+                            <input type="text" id="hist-prod-filter" placeholder="Filtrar por peça...">
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper history-table-wrapper">
+                        <table class="main-table">
+                            <thead>
+                                <tr><th>DATA / HORA</th><th>USUÁRIO</th><th>AÇÃO</th><th>PRODUTO</th><th>QTD</th></tr>
+                            </thead>
+                            <tbody id="history-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
             <section id="almoxarifado" class="main-section">
@@ -167,7 +197,6 @@
                         </table>
                     </div>
                 </div>
-                
             </section>
                 
             <section id="usuarios" class="main-section">
@@ -204,5 +233,5 @@
 
     <script src="script.js"></script>
 </body>
-//commit
 </html>
+<script type="module" src="script.js"></script>
