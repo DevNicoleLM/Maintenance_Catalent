@@ -169,3 +169,146 @@ body.is-adm .adm-only { display: flex !important; }
     width: 100%;
     border-collapse: collapse;
 }
+/* ==========================================================================
+   REGRAS DE RESPONSIVIDADE PARA CELULARES (TELAS ATÉ 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    
+    /* 1. Ajuste do Container Principal: Muda de Grid (Lado a Lado) para Bloco (Empilhado) */
+    #app-container {
+        display: flex !important;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* 2. Barra Lateral (Sidebar) vira uma Barra Superior no celular */
+    .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        position: relative;
+        padding: 15px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .sidebar-brand {
+        margin-bottom: 0;
+        justify-content: center;
+    }
+
+    /* Menu lateral vira botões lado a lado com rolagem horizontal se não couber */
+    .sidebar-menu {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        overflow-x: auto;
+        width: 100%;
+        padding-bottom: 5px;
+        white-space: nowrap;
+    }
+
+    .sidebar-menu::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .menu-item {
+        padding: 10px 15px;
+        font-size: 13px;
+        justify-content: center;
+    }
+
+    .sidebar-user {
+        margin-top: 0;
+        width: 100%;
+    }
+
+    .user-info-card {
+        justify-content: center;
+        padding: 10px;
+    }
+
+    /* 3. Conteúdo Principal */
+    .main-content {
+        padding: 15px !important;
+    }
+
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .search-box {
+        width: 100% !important;
+    }
+
+    /* 4. Grid de KPIs (Total, Crítico, Atenção, Saudável) */
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* Fica de 2 em 2 no celular */
+        gap: 10px !important;
+    }
+
+    .kpi-card {
+        padding: 12px !important;
+    }
+
+    .kpi-card h2 {
+        font-size: 20px !important;
+    }
+
+    /* 5. Tabelas Responsivas (Garante que rolem para o lado sem quebrar o layout da tela) */
+    .table-wrapper {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+    }
+
+    .main-table th, .main-table td {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+        white-space: nowrap; /* Evita que o texto quebre em mil linhas */
+    }
+
+    /* 6. Formulários (Cadastro de Produto e Usuário) */
+    .grid-form {
+        grid-template-columns: 1fr !important; /* Tudo vira uma única coluna para caber no dedo */
+        gap: 15px !important;
+    }
+
+    .f-group.span-2 {
+        grid-column: span 1 !important;
+    }
+
+    .form-btns {
+        flex-direction: column-reverse; /* Botão de salvar fica no topo para o polegar alcançar fácil */
+        gap: 10px;
+    }
+
+    .form-btns button {
+        width: 100% !important;
+        justify-content: center;
+    }
+
+    /* 7. Grid do Almoxarifado (Prateleiras) */
+    .shelves-grid {
+        grid-template-columns: 1fr !important; /* Uma prateleira embaixo da outra */
+        gap: 12px !important;
+    }
+
+    /* 8. Filtros do Histórico */
+    .history-filters {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .filter-group {
+        width: 100% !important;
+    }
+
+    .filter-group input, .filter-group select {
+        width: 100% !important;
+    }
+}
