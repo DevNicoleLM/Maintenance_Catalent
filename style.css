@@ -212,27 +212,60 @@ body.is-adm .adm-only { display: flex !important; }
     .shelf-info h4 { font-size: 13px !important; }
     .shelf-info p { font-size: 11px !important; }
 
-    /* --- FILTROS E CABEÇALHOS COM SCROLL (ARRASTAR PRO LADO) --- */
-    .history-filters, 
-    .content-header { 
-        display: flex !important;
-        flex-direction: row !important; /* Força ficar tudo na mesma linha */
-        flex-wrap: nowrap !important; /* Impede de jogar os itens pra baixo */
-        overflow-x: auto !important; /* Cria a barra de arrastar pro lado */
-        gap: 10px !important; 
-        padding-bottom: 10px !important; /* Espacinho pra não cortar a barra */
-        -webkit-overflow-scrolling: touch; /* Deixa o deslize suave no celular */
+    /* --- TABELAS EM FORMATO DE LISTA/CARDS NO MOBILE --- */
+    
+    /* Remove a barra de rolagem horizontal que tínhamos colocado */
+    .table-wrapper, .history-table-wrapper {
+        overflow-x: hidden !important; 
+        border: none !important;
     }
 
-    .filter-group { 
-        min-width: 220px !important; /* Garante que as caixas de pesquisa não fiquem esmagadas */
-        width: auto !important;
-        flex-shrink: 0; /* Impede que os filtros encolham */
+    /* Esconde o cabeçalho original da tabela (Data, Usuário, Ação...) */
+    .main-table thead {
+        display: none;
     }
 
-    .filter-group input, 
-    .filter-group select { 
-        padding: 10px !important; 
-        font-size: 13px !important; 
+    /* Força os elementos da tabela a se comportarem como blocos normais */
+    .main-table, .main-table tbody, .main-table tr, .main-table td {
+        display: block;
+        width: 100%;
+    }
+
+    /* Transforma cada LINHA da tabela em um "Card" */
+    .main-table tr {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 15px; /* Espaço entre os cards */
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    /* Estiliza cada item de dado dentro do card */
+    .main-table td {
+        border: none !important;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.05) !important;
+        padding: 8px 0 !important;
+        position: relative;
+        padding-left: 40% !important; /* Abre espaço na esquerda para o nome da coluna */
+        text-align: right; /* Joga a informação pra direita */
+        font-size: 13px !important;
+    }
+
+    /* Tira a bordinha tracejada do último item do card */
+    .main-table td:last-child {
+        border-bottom: none !important;
+    }
+
+    /* A mágica: puxa o título da coluna do HTML para aparecer na frente do dado */
+    .main-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 40%;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dim);
     }
 }
