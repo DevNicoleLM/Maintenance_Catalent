@@ -130,7 +130,7 @@ body.is-adm .adm-only { display: flex !important; }
 .filter-group select option { background: var(--bg-dark); color: #fff; }
 
 /* ==========================================================================
-   SUPER RESPONSIVO & COMPACTO PARA CELULARES (TELAS ATÉ 768px)
+   celular
    ========================================================================== */
 @media (max-width: 768px) {
     
@@ -151,9 +151,33 @@ body.is-adm .adm-only { display: flex !important; }
     .sidebar-menu::-webkit-scrollbar { height: 4px; } /* Scrollbar fininha */
     .menu-item { padding: 8px 12px !important; font-size: 11px !important; border-radius: 8px !important; flex-direction: column; gap: 4px; }
     .menu-item i { font-size: 14px; }
-    .sidebar-user { display: none; /* Esconde o usuário no topo para poupar espaço no mobile */ } 
+    /* ---  USUÁRIO E LOGOUT MOBILE --- */
+    .sidebar-user { 
+        display: flex !important; 
+        padding: 5px 0 0 0 !important; 
+        border-top: none !important; 
+    }
+    
+    .user-info-card { 
+        width: 100%; 
+        justify-content: space-between; /* Joga o avatar pra um lado e o logout pro outro */
+        padding: 5px 10px !important; 
+        background: transparent !important;
+    }
+    
+    .user-text { 
+        display: none; /* Esconde só os textos para caber certinho */
+    }
+    
+    #btn-logout { 
+        background: rgba(239, 68, 68, 0.1); /* Dá um fundo vermelho discreto pro botão */
+        color: var(--red); 
+        padding: 6px 12px; 
+        border-radius: 8px; 
+        font-size: 14px !important;
+    }
 
-    /* --- CONTEÚDO PRINCIPAL --- */
+    /*  CONTEÚDO PRINCIPAL  */
     .main-content { padding: 12px !important; flex: 1; }
     .content-header { flex-direction: column; align-items: stretch !important; gap: 10px; margin-bottom: 15px !important; }
     #current-page-title { font-size: 18px !important; text-align: center; margin-bottom: 5px; }
@@ -161,7 +185,7 @@ body.is-adm .adm-only { display: flex !important; }
     .search-box input { font-size: 12px !important; }
     .section-subtitle { text-align: center; margin-top: 0; margin-bottom: 15px; }
 
-    /* --- MINI KPIS --- */
+    /* --- MINI KPIS */
     .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; margin-bottom: 15px !important; }
     .kpi-card { padding: 10px !important; gap: 10px !important; align-items: center; text-align: left; }
     .kpi-icon { width: 32px !important; height: 32px !important; font-size: 14px !important; }
