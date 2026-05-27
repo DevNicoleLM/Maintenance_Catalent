@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalent | Gestão de Manutenção</title>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -117,8 +117,15 @@
                     <div class="table-wrapper">
                         <table class="main-table">
                             <thead>
-                                <tr><th>PRODUTO</th><th>MARCA</th><th>CÓD. PROTHEUS</th><th>PRATELEIRA</th><th>QTD</th><th>STATUS</th></tr>
-                            </thead>
+                                <tr>
+                                    <th>PRODUTO</th>
+                                    <th>MARCA</th>
+                                    <th>CÓD. PROTHEUS</th>
+                                    <th>PRATELEIRA</th>
+                                    <th>QTD</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </header>
                             <tbody id="urgent-tbody"></tbody>
                         </table>
                     </div>
@@ -136,7 +143,7 @@
                             <i class="fa-solid fa-user"></i>
                             <select id="hist-user-filter">
                                 <option value="">Todos os Usuários</option>
-                                </select>
+                            </select>
                         </div>
                         <div class="filter-group">
                             <i class="fa-solid fa-box"></i>
@@ -147,15 +154,16 @@
                     <div class="table-wrapper history-table-wrapper">
                         <table class="main-table">
                             <thead>
-                               <tr>
-    <td data-label="Data / Hora">27/05/2026</td>
-    <td data-label="Usuário">admin</td>
-    <td data-label="Ação">DEVOLUÇÃO</td>
-    <td data-label="Produto">Chave de fenda</td>
-    <td data-label="QTD">4</td>
-</tr>
+                                <tr>
+                                    <th>DATA / HORA</th>
+                                    <th>USUÁRIO</th>
+                                    <th>AÇÃO</th>
+                                    <th>PRODUTO</th>
+                                    <th>QTD</th>
+                                </tr>
                             </thead>
-                            <tbody id="history-tbody"></tbody>
+                            <tbody id="history-tbody">
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -237,7 +245,6 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
-<script type="module" src="script.js"></script>

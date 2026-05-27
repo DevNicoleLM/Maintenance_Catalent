@@ -212,60 +212,118 @@ body.is-adm .adm-only { display: flex !important; }
     .shelf-info h4 { font-size: 13px !important; }
     .shelf-info p { font-size: 11px !important; }
 
-    /* --- TABELAS EM FORMATO DE LISTA/CARDS NO MOBILE --- */
-    
-    /* Remove a barra de rolagem horizontal que tínhamos colocado */
-    .table-wrapper, .history-table-wrapper {
-        overflow-x: hidden !important; 
-        border: none !important;
+    /* ==========================================================================
+       MUDANÇA DE TABELA PARA LISTA VERTICAL (FEED) - MOBILE
+       ========================================================================== */
+
+    /* Ajusta o topo da página para não esmagar os elementos */
+    .content-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        margin-bottom: 15px !important;
     }
 
-    /* Esconde o cabeçalho original da tabela (Data, Usuário, Ação...) */
+    #current-page-title {
+        font-size: 16px !important;
+        text-align: left !important;
+        font-weight: bold;
+    }
+
+    /* --- FILTROS MINI NO TOPO --- */
+    .history-filters {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important; /* Deixa 2 filtros por linha bem compactos */
+        gap: 6px !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Força o primeiro ou o terceiro filtro (caso queira ocupar a linha toda se forem 3) */
+    .history-filters .filter-group:first-child {
+        grid-column: span 2; /* O "Pesquisar em tudo" ganha mais destaque */
+    }
+
+    .filter-group {
+        min-width: 0 !important; /* Remove impedimento de encolher */
+        height: 36px !important; /* Altura menor para celular */
+        padding: 0 10px !important;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+    }
+
+    .filter-group i {
+        font-size: 12px !important;
+    }
+
+    .filter-group input, 
+    .filter-group select {
+        padding: 6px !important;
+        font-size: 12px !important;
+    }
+
+    /* --- TRANSFORMAÇÃO DA TABELA EM LISTA (SÓ ROLA PRA BAIXO) --- */
+    .history-table-wrapper, .table-wrapper {
+        overflow-x: hidden !important; /* Mata o scroll pros lados */
+        width: 100% !important;
+        background: transparent !important;
+    }
+
+    /* Esconde o cabeçalho antigo de colunas */
     .main-table thead {
-        display: none;
+        display: none !important;
     }
 
-    /* Força os elementos da tabela a se comportarem como blocos normais */
-    .main-table, .main-table tbody, .main-table tr, .main-table td {
-        display: block;
-        width: 100%;
+    /* Força as linhas da tabela a virarem blocos (tipo uma lista de contatos) */
+    .main-table, 
+    .main-table tbody, 
+    .main-table tr, 
+    .main-table td {
+        display: block !important;
+        width: 100% !important;
     }
 
-    /* Transforma cada LINHA da tabela em um "Card" */
+    /* Cada linha vira um Card de movimentação */
     .main-table tr {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        margin-bottom: 15px; /* Espaço entre os cards */
-        padding: 15px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        margin-bottom: 10px !important;
+        padding: 12px !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.15);
     }
 
-    /* Estiliza cada item de dado dentro do card */
+    /* Alinha o título na esquerda e o dado/ícone na direita */
     .main-table td {
         border: none !important;
         border-bottom: 1px dashed rgba(255, 255, 255, 0.05) !important;
-        padding: 8px 0 !important;
-        position: relative;
-        padding-left: 40% !important; /* Abre espaço na esquerda para o nome da coluna */
-        text-align: right; /* Joga a informação pra direita */
-        font-size: 13px !important;
+        padding: 6px 0 !important;
+        display: flex !important;
+        justify-content: space-between !important; /* Texto na esquerda, valor na direita */
+        align-items: center !important;
+        text-align: right;
+        font-size: 12px !important;
     }
 
-    /* Tira a bordinha tracejada do último item do card */
+    /* Remove a linha tracejada do último item do card */
     .main-table td:last-child {
         border-bottom: none !important;
     }
 
-    /* A mágica: puxa o título da coluna do HTML para aparecer na frente do dado */
+    /* Pega o "data-label" do HTML e cria o título do dado na esquerda */
     .main-table td::before {
         content: attr(data-label);
-        position: absolute;
-        left: 0;
-        top: 8px;
-        width: 40%;
-        text-align: left;
         font-weight: 600;
         color: var(--text-dim);
+        text-align: left;
+        font-size: 11px;
+    }
+
+    /* Deixa os botões de ação (+ e -) pequenos e bonitos no canto */
+    .btn-action {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 11px !important;
+        margin-left: auto; /* Garante que fique colado na direita */
     }
 }

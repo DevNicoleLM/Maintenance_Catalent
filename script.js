@@ -215,14 +215,15 @@ async function renderAll() {
 
         const pShelfStr = String(p.shelf || '1').padStart(2, '0');
 
+        // TABELA ESTOQUE CRÍTICO: Adicionado data-label
         const urgentRow = `
             <tr>
-                <td><strong>${p.name}</strong></td>
-                <td>${p.brand}</td>
-                <td><code>${p.code}</code></td>
-                <td>P${pShelfStr}</td>
-                <td><strong style="color:${Number(p.qty) <= Number(p.lred) ? 'var(--red)' : 'inherit'}">${p.qty}</strong></td>
-                <td><span class="status-pill ${stat.class}">${stat.label}</span></td>
+                <td data-label="Produto"><strong>${p.name}</strong></td>
+                <td data-label="Marca">${p.brand}</td>
+                <td data-label="Cód. Protheus"><code>${p.code}</code></td>
+                <td data-label="Prateleira">P${pShelfStr}</td>
+                <td data-label="QTD"><strong style="color:${Number(p.qty) <= Number(p.lred) ? 'var(--red)' : 'inherit'}">${p.qty}</strong></td>
+                <td data-label="Status"><span class="status-pill ${stat.class}">${stat.label}</span></td>
             </tr>
         `;
 
@@ -235,18 +236,19 @@ async function renderAll() {
             </div>
         `;
 
+        // TABELA LISTA DE PRODUTOS: Adicionado data-label
         if (inventoryTbody) {
             inventoryTbody.innerHTML += `
                 <tr>
-                    <td><strong>${p.name}</strong></td>
-                    <td>${p.spec}</td>
-                    <td>${p.brand}</td>
-                    <td><code>${p.code}</code></td>
-                    <td>P${pShelfStr}</td>
-                    <td><span class="status-pill ${stat.class}">${p.qty}</span></td>
-                    <td>${p.lred}</td>
-                    <td>${p.lyellow}</td>
-                    <td>${actionButtons}</td>
+                    <td data-label="Nome"><strong>${p.name}</strong></td>
+                    <td data-label="Especificação">${p.spec}</td>
+                    <td data-label="Marca">${p.brand}</td>
+                    <td data-label="Cód."><code>${p.code}</code></td>
+                    <td data-label="Prat.">P${pShelfStr}</td>
+                    <td data-label="QTD"><span class="status-pill ${stat.class}">${p.qty}</span></td>
+                    <td data-label="Vermelho">${p.lred}</td>
+                    <td data-label="Amarelo">${p.lyellow}</td>
+                    <td data-label="Ações">${actionButtons}</td>
                 </tr>
             `;
         }
@@ -319,13 +321,14 @@ async function renderHistory() {
             ? '<span class="status-pill pill-yellow">RETIRADA</span>' 
             : '<span class="status-pill pill-blue" style="background:rgba(59,130,246,0.2); color:var(--accent);">DEVOLUÇÃO</span>';
             
+        // TABELA HISTÓRICO: Adicionado data-label
         tbody.innerHTML += `
             <tr>
-                <td>${h.date}</td>
-                <td><strong>${h.user}</strong></td>
-                <td>${badge}</td>
-                <td>${h.prod}</td>
-                <td><strong>${h.qty}</strong></td>
+                <td data-label="Data / Hora">${h.date}</td>
+                <td data-label="Usuário"><strong>${h.user}</strong></td>
+                <td data-label="Ação">${badge}</td>
+                <td data-label="Produto">${h.prod}</td>
+                <td data-label="QTD"><strong>${h.qty}</strong></td>
             </tr>
         `;
     });
@@ -425,11 +428,12 @@ async function renderUsers() {
         const u = docSnapshot.data();
         const id = docSnapshot.id;
         
+        // TABELA USUÁRIOS: Adicionado data-label
         tbody.innerHTML += `
             <tr>
-                <td>${u.user} ${u.user === 'adm1' ? '<small>(mestre)</small>' : ''}</td>
-                <td><span class="status-pill ${u.level === 'ADM' ? 'pill-green' : 'pill-yellow'}">${u.level}</span></td>
-                <td>${u.user === 'adm1' ? 'protegido' : `<button style="background:none; border:none; color:var(--red); cursor:pointer;" onclick="deleteUser('${id}')"><i class="fa-solid fa-trash"></i></button>`}</td>
+                <td data-label="Usuário">${u.user} ${u.user === 'adm1' ? '<small>(mestre)</small>' : ''}</td>
+                <td data-label="Nível"><span class="status-pill ${u.level === 'ADM' ? 'pill-green' : 'pill-yellow'}">${u.level}</span></td>
+                <td data-label="Ações">${u.user === 'adm1' ? 'protegido' : `<button style="background:none; border:none; color:var(--red); cursor:pointer;" onclick="deleteUser('${id}')"><i class="fa-solid fa-trash"></i></button>`}</td>
             </tr>
         `;
     });
