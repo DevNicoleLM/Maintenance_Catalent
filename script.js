@@ -263,7 +263,10 @@ async function renderAll() {
     if(document.getElementById('kpi-yellow')) document.getElementById('kpi-yellow').textContent = yellowCount;
     if(document.getElementById('kpi-green')) document.getElementById('kpi-green').textContent = greenCount;
 
-    renderShelves(prods);
+    // --- CORREÇÃO AQUI ---
+    // Passando a lista filtrada ('filtered') ao invés da lista bruta global ('prods')
+    renderShelves(filtered); 
+    
     renderUsers();
     renderHistory();
 }
@@ -350,8 +353,18 @@ function renderShelves(prods) {
 
     container.innerHTML = '';
 
+    // --- MELHORIA DE UX ---
+    // Pega o termo digitado no campo de pesquisa global para ocultar caixas vazias
+    const currentSearch = document.getElementById('global-search')?.value.trim() || '';
+
     for (let i = 1; i <= 13; i++) {
         const shelfProds = prods.filter(p => Number(p.shelf) === i);
+        
+        // Se houver uma pesquisa ativa e esta prateleira não possuir o item, ela não será gerada na tela
+        if (shelfProds.length === 0 && currentSearch !== '') {
+            continue;
+        }
+
         const shelfNum = i.toString().padStart(2, '0');
         const isActive = openShelves.includes(shelfNum) ? 'active' : '';
 
