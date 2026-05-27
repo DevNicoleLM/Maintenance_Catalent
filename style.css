@@ -230,100 +230,90 @@ body.is-adm .adm-only { display: flex !important; }
         font-weight: bold;
     }
 
-    /* --- FILTROS MINI NO TOPO --- */
-    .history-filters {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important; /* Deixa 2 filtros por linha bem compactos */
-        gap: 6px !important;
+   /* ==========================================================================
+       CORREÇÃO DEFINITIVA DO HISTÓRICO NO CELULAR
+       ========================================================================== */
+    
+    /* 1. Força o painel inteiro a empilhar tudo verticalmente e ocupar 100% */
+    #dashboard .data-panel.mt-20 {
+        display: flex !important;
+        flex-direction: column !important;
         width: 100% !important;
+        padding: 10px !important; 
+        box-sizing: border-box !important;
+    }
+
+    /* 2. Ajusta o título para ocupar a largura toda */
+    .panel-header {
+        width: 100% !important;
+        border-bottom: none !important;
+        margin-bottom: 10px !important;
         padding: 0 !important;
     }
 
-    /* Força o primeiro ou o terceiro filtro (caso queira ocupar a linha toda se forem 3) */
-    .history-filters .filter-group:first-child {
-        grid-column: span 2; /* O "Pesquisar em tudo" ganha mais destaque */
+    /* 3. Filtros empilhados e confortáveis no topo */
+    .history-filters {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 10px !important;
+        margin-bottom: 20px !important;
     }
 
     .filter-group {
-        min-width: 0 !important; /* Remove impedimento de encolher */
-        height: 36px !important; /* Altura menor para celular */
-        padding: 0 10px !important;
-        background: var(--bg-card) !important;
-        border: 1px solid var(--border) !important;
-    }
-
-    .filter-group i {
-        font-size: 12px !important;
-    }
-
-    .filter-group input, 
-    .filter-group select {
-        padding: 6px !important;
-        font-size: 12px !important;
-    }
-
-    /* --- TRANSFORMAÇÃO DA TABELA EM LISTA (SÓ ROLA PRA BAIXO) --- */
-    .history-table-wrapper, .table-wrapper {
-        overflow-x: hidden !important; /* Mata o scroll pros lados */
         width: 100% !important;
-        background: transparent !important;
+        height: 42px !important;
+        padding: 0 12px !important;
+        background: var(--bg-input) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 8px !important;
     }
 
-    /* Esconde o cabeçalho antigo de colunas */
-    .main-table thead {
-        display: none !important;
+    /* 4. Transforma a tabela em lista */
+    .history-table-wrapper {
+        width: 100% !important;
+        overflow: hidden !important; /* Sem scroll horizontal, tudo desce verticalmente */
     }
 
-    /* Força as linhas da tabela a virarem blocos (tipo uma lista de contatos) */
-    .main-table, 
-    .main-table tbody, 
-    .main-table tr, 
-    .main-table td {
+    .main-table, .main-table tbody {
         display: block !important;
         width: 100% !important;
     }
 
-    /* Cada linha vira um Card de movimentação */
+    .main-table thead {
+        display: none !important; /* Some com o cabeçalho de colunas do PC */
+    }
+
+    /* Cada linha vira uma caixinha (Card) individual */
     .main-table tr {
+        display: flex !important;
+        flex-direction: column !important; 
         background: var(--bg-card) !important;
         border: 1px solid var(--border) !important;
         border-radius: 12px !important;
-        margin-bottom: 10px !important;
-        padding: 12px !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        margin-bottom: 15px !important;
+        padding: 15px !important;
+        gap: 12px !important; 
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
-    /* Alinha o título na esquerda e o dado/ícone na direita */
+    /* Cada item dentro do card (Data, usuário, etc) */
     .main-table td {
-        border: none !important;
-        border-bottom: 1px dashed rgba(255, 255, 255, 0.05) !important;
-        padding: 6px 0 !important;
         display: flex !important;
-        justify-content: space-between !important; /* Texto na esquerda, valor na direita */
+        justify-content: space-between !important; /* Título na esquerda, Dado na direita */
         align-items: center !important;
-        text-align: right;
-        font-size: 12px !important;
+        width: 100% !important;
+        border: none !important;
+        padding: 0 !important;
+        font-size: 13px !important;
+        color: white !important;
     }
 
-    /* Remove a linha tracejada do último item do card */
-    .main-table td:last-child {
-        border-bottom: none !important;
-    }
-
-    /* Pega o "data-label" do HTML e cria o título do dado na esquerda */
-    .main-table td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: var(--text-dim);
-        text-align: left;
-        font-size: 11px;
-    }
-
-    /* Deixa os botões de ação (+ e -) pequenos e bonitos no canto */
-    .btn-action {
-        width: 26px !important;
-        height: 26px !important;
-        font-size: 11px !important;
-        margin-left: auto; /* Garante que fique colado na direita */
-    }
+    /* Injeta o nome do dado na esquerda pra fazer sentido */
+    .main-table td:nth-child(1)::before { content: "Data/Hora"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    .main-table td:nth-child(2)::before { content: "Usuário"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    .main-table td:nth-child(3)::before { content: "Ação"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    .main-table td:nth-child(4)::before { content: "Produto"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    .main-table td:nth-child(5)::before { content: "QTD"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
 }
