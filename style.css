@@ -212,8 +212,27 @@ body.is-adm .adm-only { display: flex !important; }
     .shelf-info h4 { font-size: 13px !important; }
     .shelf-info p { font-size: 11px !important; }
 
-    /* --- FILTROS --- */
-    .history-filters { flex-direction: column !important; gap: 8px !important; }
-    .filter-group { width: 100% !important; padding: 0 10px !important; }
-    .filter-group input, .filter-group select { padding: 10px !important; font-size: 12px !important; }
+    /* --- FILTROS E CABEÇALHOS COM SCROLL (ARRASTAR PRO LADO) --- */
+    .history-filters, 
+    .content-header { 
+        display: flex !important;
+        flex-direction: row !important; /* Força ficar tudo na mesma linha */
+        flex-wrap: nowrap !important; /* Impede de jogar os itens pra baixo */
+        overflow-x: auto !important; /* Cria a barra de arrastar pro lado */
+        gap: 10px !important; 
+        padding-bottom: 10px !important; /* Espacinho pra não cortar a barra */
+        -webkit-overflow-scrolling: touch; /* Deixa o deslize suave no celular */
+    }
+
+    .filter-group { 
+        min-width: 220px !important; /* Garante que as caixas de pesquisa não fiquem esmagadas */
+        width: auto !important;
+        flex-shrink: 0; /* Impede que os filtros encolham */
+    }
+
+    .filter-group input, 
+    .filter-group select { 
+        padding: 10px !important; 
+        font-size: 13px !important; 
+    }
 }
