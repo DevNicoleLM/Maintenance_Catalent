@@ -38,7 +38,7 @@ async function init() {
     const select = document.getElementById('p-shelf');
     if (select) {
         select.innerHTML = ''; 
-        for (let i = 1; i <= 13; i++) {
+        for (let i = 1; i <= 14; i++) {
             const opt = document.createElement('option');
             const num = i.toString().padStart(2, '0');
             opt.value = i; 
@@ -357,7 +357,7 @@ function renderShelves(prods) {
     // Pega o termo digitado no campo de pesquisa global para ocultar caixas vazias
     const currentSearch = document.getElementById('global-search')?.value.trim() || '';
 
-    for (let i = 1; i <= 13; i++) {
+    for (let i = 1; i <= 14; i++) {
         const shelfProds = prods.filter(p => Number(p.shelf) === i);
         
         // Se houver uma pesquisa ativa e esta prateleira não possuir o item, ela não será gerada na tela
