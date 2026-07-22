@@ -9,47 +9,36 @@ import {
     updateDoc, 
     deleteDoc,
     query,
-    orderBy
+    orderBy,
+    onSnapshot 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // 2. CONFIGURAÇÃO OFICIAL DO SEU PROJETO
 const firebaseConfig = {
-  apiKey: "AIzaSyD0zhL_e3cyID6AoZ5czsisKQw0aCoi0XQ",
-  authDomain: "almoxarifado-606ec.firebaseapp.com",
-  projectId: "almoxarifado-606ec",
-  storageBucket: "almoxarifado-606ec.firebasestorage.app",
-  messagingSenderId: "475873277697",
-  appId: "1:475873277697:web:6322bbf8cb2b0124160d00"
+    apiKey: "AIzaSyD0zhL_e3cyID6AoZ5czsisKQw0aCoi0XQ",
+    authDomain: "almoxarifado-606ec.firebaseapp.com",
+    projectId: "almoxarifado-606ec",
+    storageBucket: "almoxarifado-606ec.firebasestorage.app",
+    messagingSenderId: "475873277697",
+    appId: "1:475873277697:web:6322bbf8cb2b0124160d00"
 };
 
 // 3. INICIALIZAÇÃO DO FIREBASE
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Guardar prateleiras dinâmicas ativas
+let currentDynamicShelves = [];
+
 // --- INICIALIZAÇÃO DO SISTEMA ---
 async function init() {
-    // Verifica se já existem usuários cadastrados na nuvem, se não, cria o admin mestre
     const querySnapshot = await getDocs(collection(db, "users"));
     if (querySnapshot.empty) {
         await addDoc(collection(db, "users"), { user: 'adm1', pass: '123', level: 'ADM' });
     }
 
-    // Renderiza o select de prateleiras no formulário de cadastro
-    const select = document.getElementById('p-shelf');
-    if (select) {
-        select.innerHTML = ''; 
-        for (let i = 1; i <= 14; i++) {
-            const opt = document.createElement('option');
-            const num = i.toString().padStart(2, '0');
-            opt.value = i; 
-            opt.textContent = `Prateleira ${num}`;
-            select.appendChild(opt);
-        }
-    }
-
     setupNavigation();
     
-    // Verifica se já existe login ativo na sessão atual para pular a tela de login
     const loggedUserRaw = sessionStorage.getItem('logged_user');
     if (loggedUserRaw) {
         enterApp(JSON.parse(loggedUserRaw));
@@ -64,6 +53,7 @@ function setupNavigation() {
     menuItems.forEach(item => {
         item.addEventListener('click', () => {
             const target = item.dataset.target;
+            if(!target) return;
             
             menuItems.forEach(i => i.classList.remove('active'));
             item.classList.add('active');
@@ -76,13 +66,27 @@ function setupNavigation() {
     });
 }
 
+window.switchTab = function(tabId, btnElement) {
+    const sections = document.querySelectorAll('.main-section');
+    const menuItems = document.querySelectorAll('.menu-item');
+
+    menuItems.forEach(i => i.classList.remove('active'));
+    if (btnElement) btnElement.classList.add('active');
+
+    sections.forEach(s => s.classList.remove('active'));
+    const targetSection = document.getElementById(tabId);
+    if (targetSection) targetSection.classList.add('active');
+
+    const titleElement = document.getElementById('current-page-title');
+    if (titleElement && btnElement) titleElement.textContent = btnElement.innerText.trim();
+};
+
 // --- TELA DE LOGIN ---
-document.getElementById('login-form').addEventListener('submit', async (e) => {
+document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const uInput = document.getElementById('login-user').value;
     const pInput = document.getElementById('login-pass').value;
 
-    // Busca os usuários direto do Firebase
     const querySnapshot = await getDocs(collection(db, "users"));
     let found = null;
     
@@ -115,7 +119,7 @@ function enterApp(user) {
     renderAll();
 }
 
-document.getElementById('btn-logout').addEventListener('click', () => {
+document.getElementById('btn-logout')?.addEventListener('click', () => {
     sessionStorage.clear();
     location.reload();
 });
@@ -128,9 +132,8 @@ function getStatus(qty, red, yellow) {
     return { label: 'SAUDÁVEL', class: 'pill-green' };
 }
 
-// --- MOVIMENTAÇÃO DE ESTOQUE (ENTRADA / SAÍDA) ---
+// --- MOVIMENTAÇÃO DE ESTOQUE ---
 async function moveStock(id, type) {
-    // Busca a lista atualizada de produtos da nuvem
     const querySnapshot = await getDocs(collection(db, "products"));
     let prod = null;
     
@@ -148,28 +151,25 @@ async function moveStock(id, type) {
 
     let qtd = parseInt(qtdStr);
     if (isNaN(qtd) || qtd <= 0) {
-        alert('Quantidade inválida! Digite um número maior que zero.');
+        alert('Quantidade inválida!');
         return;
     }
 
     if (type === 'OUT' && qtd > prod.qty) {
-        alert(`Estoque insuficiente! Você tentou retirar ${qtd}, mas só existem ${prod.qty} disponíveis.`);
+        alert(`Estoque insuficiente! Disponível: ${prod.qty}`);
         return;
     }
 
-    // Calcula nova quantidade
     const novaQtd = type === 'OUT' ? Number(prod.qty) - qtd : Number(prod.qty) + qtd;
 
-    // 1. Atualiza a quantidade do produto na Nuvem
     const prodRef = doc(db, "products", id);
     await updateDoc(prodRef, { qty: novaQtd });
 
-    // 2. Registra a movimentação no histórico global na Nuvem
     const loggedUserRaw = sessionStorage.getItem('logged_user');
     const currentUser = loggedUserRaw ? JSON.parse(loggedUserRaw).user : 'Desconhecido';
     
     await addDoc(collection(db, "history"), {
-        timestamp: Date.now(), // Usado para ordenar cronologicamente
+        timestamp: Date.now(),
         date: new Date().toLocaleString('pt-BR'),
         user: currentUser,
         type: type,
@@ -180,16 +180,15 @@ async function moveStock(id, type) {
     renderAll();
 }
 
-// --- RENDERIZAÇÃO CENTRALIZADA (ASSÍNCRONA) ---
+// --- RENDERIZAÇÃO CENTRALIZADA ---
 async function renderAll() {
-    // Carrega dados em tempo real da nuvem
     const prodSnapshot = await getDocs(collection(db, "products"));
     const prods = [];
     prodSnapshot.forEach(doc => {
         prods.push({ id: doc.id, ...doc.data() });
     });
 
-    const search = document.getElementById('global-search').value.toLowerCase();
+    const search = document.getElementById('global-search')?.value.toLowerCase() || '';
     const currentUser = JSON.parse(sessionStorage.getItem('logged_user'));
     const isAdm = currentUser?.level === 'ADM';
     
@@ -213,15 +212,16 @@ async function renderAll() {
         else if (stat.label === 'ATENÇÃO') yellowCount++;
         else greenCount++;
 
-        const pShelfStr = String(p.shelf || '1').padStart(2, '0');
+        // Descobre o nome visual da prateleira (Fixa ou Dinâmica)
+        const dynShelf = currentDynamicShelves.find(s => s.id === p.shelf);
+        const pShelfStr = dynShelf ? dynShelf.name : (!isNaN(Number(p.shelf)) ? `P${String(p.shelf).padStart(2, '0')}` : p.shelf);
 
-        // TABELA ESTOQUE CRÍTICO: Adicionado data-label
         const urgentRow = `
             <tr>
                 <td data-label="Produto"><strong>${p.name}</strong></td>
                 <td data-label="Marca">${p.brand}</td>
                 <td data-label="Cód. Protheus"><code>${p.code}</code></td>
-                <td data-label="Prateleira">P${pShelfStr}</td>
+                <td data-label="Prateleira">${pShelfStr}</td>
                 <td data-label="QTD"><strong style="color:${Number(p.qty) <= Number(p.lred) ? 'var(--red)' : 'inherit'}">${p.qty}</strong></td>
                 <td data-label="Status"><span class="status-pill ${stat.class}">${stat.label}</span></td>
             </tr>
@@ -236,7 +236,6 @@ async function renderAll() {
             </div>
         `;
 
-        // TABELA LISTA DE PRODUTOS: Adicionado data-label
         if (inventoryTbody) {
             inventoryTbody.innerHTML += `
                 <tr>
@@ -244,7 +243,7 @@ async function renderAll() {
                     <td data-label="Especificação">${p.spec}</td>
                     <td data-label="Marca">${p.brand}</td>
                     <td data-label="Cód."><code>${p.code}</code></td>
-                    <td data-label="Prat.">P${pShelfStr}</td>
+                    <td data-label="Prat.">${pShelfStr}</td>
                     <td data-label="QTD"><span class="status-pill ${stat.class}">${p.qty}</span></td>
                     <td data-label="Vermelho">${p.lred}</td>
                     <td data-label="Amarelo">${p.lyellow}</td>
@@ -263,17 +262,13 @@ async function renderAll() {
     if(document.getElementById('kpi-yellow')) document.getElementById('kpi-yellow').textContent = yellowCount;
     if(document.getElementById('kpi-green')) document.getElementById('kpi-green').textContent = greenCount;
 
-    // --- CORREÇÃO AQUI ---
-    // Passando a lista filtrada ('filtered') ao invés da lista bruta global ('prods')
     renderShelves(filtered); 
-    
     renderUsers();
     renderHistory();
 }
 
 // --- HISTÓRICO DE MOVIMENTAÇÕES ---
 async function renderHistory() {
-    // Puxa o histórico ordenado pelo registro mais recente
     const historyQuery = query(collection(db, "history"), orderBy("timestamp", "desc"));
     const historySnapshot = await getDocs(historyQuery);
     
@@ -289,7 +284,6 @@ async function renderHistory() {
     const userFilter = document.getElementById('hist-user-filter')?.value || '';
     const prodFilter = document.getElementById('hist-prod-filter')?.value.toLowerCase() || '';
 
-    // Popula o dropdown dinâmico de usuários se estiver vazio
     const userSelect = document.getElementById('hist-user-filter');
     if (userSelect && userSelect.options.length <= 1 && history.length > 0) {
         const uniqueUsers = [...new Set(history.map(h => h.user))];
@@ -324,7 +318,6 @@ async function renderHistory() {
             ? '<span class="status-pill pill-yellow">RETIRADA</span>' 
             : '<span class="status-pill pill-blue" style="background:rgba(59,130,246,0.2); color:var(--accent);">DEVOLUÇÃO</span>';
             
-        // TABELA HISTÓRICO: Adicionado data-label
         tbody.innerHTML += `
             <tr>
                 <td data-label="Data / Hora">${h.date}</td>
@@ -337,39 +330,35 @@ async function renderHistory() {
     });
 }
 
-// --- MONITORAMENTO DE FILTROS DO HISTÓRICO ---
 document.getElementById('hist-search')?.addEventListener('input', renderHistory);
 document.getElementById('hist-user-filter')?.addEventListener('change', renderHistory);
 document.getElementById('hist-prod-filter')?.addEventListener('input', renderHistory);
 
-// --- VISUALIZAÇÃO DO ALMOXARIFADO (ESTRUTURA DAS PRATELEIRAS) ---
+// --- PRATELEIRAS FIXAS E DINÂMICAS ---
 function renderShelves(prods) {
     const container = document.getElementById('shelves-container');
     if (!container) return;
 
-    const openShelves = Array.from(container.children)
-        .filter(card => card.classList.contains('active'))
-        .map(card => card.querySelector('.shelf-id').textContent.trim());
+    let staticContainer = document.getElementById('static-shelves-list');
+    if (!staticContainer) {
+        staticContainer = document.createElement('div');
+        staticContainer.id = 'static-shelves-list';
+        staticContainer.style.width = '100%';
+        container.insertBefore(staticContainer, container.firstChild);
+    }
 
-    container.innerHTML = '';
-
-    // --- MELHORIA DE UX ---
-    // Pega o termo digitado no campo de pesquisa global para ocultar caixas vazias
+    staticContainer.innerHTML = '';
     const currentSearch = document.getElementById('global-search')?.value.trim() || '';
 
+    // 1. Renderiza as 14 Fixas
     for (let i = 1; i <= 14; i++) {
         const shelfProds = prods.filter(p => Number(p.shelf) === i);
-        
-        // Se houver uma pesquisa ativa e esta prateleira não possuir o item, ela não será gerada na tela
-        if (shelfProds.length === 0 && currentSearch !== '') {
-            continue;
-        }
+        if (shelfProds.length === 0 && currentSearch !== '') continue;
 
         const shelfNum = i.toString().padStart(2, '0');
-        const isActive = openShelves.includes(shelfNum) ? 'active' : '';
 
         const card = document.createElement('div');
-        card.className = `shelf-card ${isActive}`;
+        card.className = `shelf-card`;
         card.innerHTML = `
             <div class="shelf-top" onclick="this.parentElement.classList.toggle('active')">
                 <div class="shelf-id">${shelfNum}</div>
@@ -385,20 +374,64 @@ function renderShelves(prods) {
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                             <span>• <strong>${p.name}</strong> (${p.qty} un)</span>
                             <div style="display: flex; gap: 6px;">
-                                <button class="btn-action btn-out" style="width: 26px; height: 26px; font-size: 11px;" onclick="moveStock('${p.id}', 'OUT')" title="Retirar do estoque"><i class="fa-solid fa-minus"></i></button>
-                                <button class="btn-action btn-in" style="width: 26px; height: 26px; font-size: 11px;" onclick="moveStock('${p.id}', 'IN')" title="Devolver ao estoque"><i class="fa-solid fa-plus"></i></button>
+                                <button class="btn-action btn-out" style="width: 26px; height: 26px; font-size: 11px;" onclick="moveStock('${p.id}', 'OUT')"><i class="fa-solid fa-minus"></i></button>
+                                <button class="btn-action btn-in" style="width: 26px; height: 26px; font-size: 11px;" onclick="moveStock('${p.id}', 'IN')"><i class="fa-solid fa-plus"></i></button>
                             </div>
                         </div>
                     `).join('') 
                     : '<p style="color:var(--text-dim); font-size:12px;">Vazia</p>'}
             </div>
         `;
-        container.appendChild(card);
+        staticContainer.appendChild(card);
     }
+
+    // 2. Renderiza as Dinâmicas com os Produtos dentro delas!
+    let dynamicContainer = document.getElementById('dynamic-shelves-list');
+    if (!dynamicContainer) {
+        dynamicContainer = document.createElement('div');
+        dynamicContainer.id = 'dynamic-shelves-list';
+        dynamicContainer.style.width = '100%';
+        container.appendChild(dynamicContainer);
+    }
+
+    dynamicContainer.innerHTML = '';
+    currentDynamicShelves.forEach(shelf => {
+        const shelfProds = prods.filter(p => p.shelf === shelf.id || p.shelf === shelf.name);
+        if (shelfProds.length === 0 && currentSearch !== '') return;
+
+        const card = document.createElement('div');
+        card.className = `shelf-card`;
+        card.innerHTML = `
+            <div class="shelf-top" onclick="this.parentElement.classList.toggle('active')">
+                <div class="shelf-id"><i class="fas fa-box"></i></div>
+                <div class="shelf-info">
+                    <h4>${shelf.name}</h4>
+                    <p>${shelfProds.length} itens cadastrados</p>
+                </div>
+                <button class="btn-action pill-red adm-only" style="width: auto; padding: 5px 10px; font-size: 12px;" onclick="event.stopPropagation(); deleteShelf('${shelf.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="shelf-details" style="padding-top: 10px;">
+                ${shelfProds.length > 0 ? 
+                    shelfProds.map(p => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <span>• <strong>${p.name}</strong> (${p.qty} un)</span>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn-action btn-out" style="width: 26px; height: 26px; font-size: 11px;" onclick="moveStock('${p.id}', 'OUT')"><i class="fa-solid fa-minus"></i></button>
+                                <button class="btn-action btn-in" style="width: 26px; height: 26px; font-size: 11px;" onclick="moveStock('${p.id}', 'IN')"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                    `).join('') 
+                    : '<p style="color:var(--text-dim); font-size:12px;">Vazia</p>'}
+            </div>
+        `;
+        dynamicContainer.appendChild(card);
+    });
 }
 
-// --- CADASTRO DE NOVO PRODUTO ---
-document.getElementById('product-form').addEventListener('submit', async (e) => {
+// --- CADASTRO DE PRODUTO ---
+document.getElementById('product-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const novoProduto = {
@@ -412,25 +445,19 @@ document.getElementById('product-form').addEventListener('submit', async (e) => 
         lyellow: Number(document.getElementById('p-lyellow').value)
     };
 
-    // Adiciona o produto na coleção do Firebase
     await addDoc(collection(db, "products"), novoProduto);
-    
     e.target.reset();
     renderAll();
-    alert('Produto salvo com sucesso na nuvem!');
+    alert('Produto salvo com sucesso!');
 });
 
-// --- REMOÇÃO DE PRODUTO ---
 async function deleteProd(id) {
-    if (!confirm('Tem certeza que deseja excluir este produto do sistema definitivamente?')) return;
-    
-    const prodRef = doc(db, "products", id);
-    await deleteDoc(prodRef);
-    
+    if (!confirm('Deseja excluir este produto definitivamente?')) return;
+    await deleteDoc(doc(db, "products", id));
     renderAll();
 }
 
-// --- GERENCIAMENTO DE USUÁRIOS ---
+// --- USUÁRIOS ---
 async function renderUsers() {
     const querySnapshot = await getDocs(collection(db, "users"));
     const tbody = document.getElementById('user-tbody');
@@ -441,7 +468,6 @@ async function renderUsers() {
         const u = docSnapshot.data();
         const id = docSnapshot.id;
         
-        // TABELA USUÁRIOS: Adicionado data-label
         tbody.innerHTML += `
             <tr>
                 <td data-label="Usuário">${u.user} ${u.user === 'adm1' ? '<small>(mestre)</small>' : ''}</td>
@@ -452,37 +478,302 @@ async function renderUsers() {
     });
 }
 
-document.getElementById('user-form').addEventListener('submit', async (e) => {
+document.getElementById('user-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
     const novoUsuario = {
         user: document.getElementById('u-name').value,
         pass: document.getElementById('u-pass').value,
         level: document.getElementById('u-level').value
     };
-
     await addDoc(collection(db, "users"), novoUsuario);
-    
     e.target.reset();
     renderUsers();
 });
 
 async function deleteUser(id) {
-    if (!confirm(`Remover acesso deste usuário do banco de dados?`)) return;
-    
-    const userRef = doc(db, "users", id);
-    await deleteDoc(userRef);
-    
+    if (!confirm(`Remover acesso deste usuário?`)) return;
+    await deleteDoc(doc(db, "users", id));
     renderUsers();
 }
 
-// Ouvinte do campo de busca global da barra superior
-document.getElementById('global-search').addEventListener('input', renderAll);
+document.getElementById('global-search')?.addEventListener('input', renderAll);
 
-// --- MAPEAMENTO GLOBAL PARA ACESSO DO NAVAGADOR (AÇÕES DO HTML) ---
+// Exposição global de funções
 window.moveStock = moveStock;
 window.deleteProd = deleteProd;
 window.deleteUser = deleteUser;
 
-// Dispara a inicialização geral
+// ==========================================
+// MÁQUINAS -> ITENS -> SUBITENS (FIREBASE)
+// ==========================================
+const machinesCol = collection(db, "machines");
+const machineItemsCol = collection(db, "machine_items");
+const machineSubitemsCol = collection(db, "machine_subitems");
+
+const formMachine = document.getElementById('form-machine') || document.getElementById('machine-form');
+if (formMachine) {
+    formMachine.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const nameInput = document.getElementById('m-name') || document.getElementById('machine-name');
+        const codeInput = document.getElementById('m-code') || document.getElementById('machine-code');
+
+        if (!nameInput || !nameInput.value.trim()) {
+            alert("Digite o nome da máquina!");
+            return;
+        }
+
+        try {
+            await addDoc(machinesCol, { 
+                name: nameInput.value.trim(), 
+                code: codeInput ? codeInput.value.trim() : '-', 
+                createdAt: Date.now() 
+            });
+            nameInput.value = '';
+            if (codeInput) codeInput.value = '';
+            alert("Máquina salva com SUCESSO no Firebase!");
+        } catch (error) {
+            console.error("Erro ao salvar máquina:", error);
+            alert("Erro ao salvar máquina no Firebase: " + error.message);
+        }
+    });
+}
+
+window.addMachineItem = async (machineId) => {
+    const name = prompt("Nome do Item / Conjunto (Ex: Unidade de Injeção, Cabeçote, Motor):");
+    if (!name || !name.trim()) return;
+
+    const code = prompt("Código do Item / Conjunto (Ex: CONJ-01 / Protheus):") || "-";
+
+    await addDoc(machineItemsCol, {
+        machineId,
+        name: name.trim(),
+        code: code.trim(),
+        createdAt: Date.now()
+    });
+};
+
+window.addMachineSubitem = async (machineId, itemId) => {
+    const name = prompt("Nome da Peça / Subitem (Ex: Rolamento, Trafo, Válvula):");
+    if (!name || !name.trim()) return;
+
+    const code = prompt("Código Protheus / Fabricante da peça:") || "-";
+    const qtyStr = prompt("Quantidade necessária / em estoque:") || "1";
+
+    await addDoc(machineSubitemsCol, {
+        machineId,
+        itemId,
+        name: name.trim(),
+        code: code.trim(),
+        qty: Number(qtyStr) || 1,
+        createdAt: Date.now()
+    });
+};
+
+window.deleteMachine = async (id) => {
+    if (confirm("Remover esta máquina e todos os seus itens?")) {
+        await deleteDoc(doc(db, "machines", id));
+    }
+};
+
+window.deleteMachineItem = async (id) => {
+    if (confirm("Remover este conjunto/item?")) {
+        await deleteDoc(doc(db, "machine_items", id));
+    }
+};
+
+window.deleteMachineSubitem = async (id) => {
+    if (confirm("Remover esta peça/subitem?")) {
+        await deleteDoc(doc(db, "machine_subitems", id));
+    }
+};
+
+function listenToMachinesTree() {
+    const qM = query(machinesCol, orderBy("createdAt", "asc"));
+    const qI = query(machineItemsCol, orderBy("createdAt", "asc"));
+    const qS = query(machineSubitemsCol, orderBy("createdAt", "asc"));
+
+    let machinesArr = [], itemsArr = [], subitemsArr = [];
+
+    const renderTree = () => {
+        const container = document.getElementById('machines-tree-container');
+        if (!container) return;
+
+        const openCards = Array.from(container.querySelectorAll('.shelf-card.active')).map(el => el.dataset.id);
+        container.innerHTML = '';
+
+        if (machinesArr.length === 0) {
+            container.innerHTML = `<p style="color:var(--text-dim); text-align:center; padding: 30px;">Nenhuma máquina cadastrada.</p>`;
+            return;
+        }
+
+        machinesArr.forEach(m => {
+            const mItems = itemsArr.filter(i => i.machineId === m.id);
+            const isActive = openCards.includes(m.id) ? 'active' : '';
+
+            let itemsHTML = mItems.map(item => {
+                const itemSubitems = subitemsArr.filter(s => s.itemId === item.id);
+
+                let subitemsHTML = itemSubitems.map(sub => `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                        <td style="padding: 6px;"><i class="fas fa-wrench" style="color:var(--accent); font-size:11px;"></i> <strong>${sub.name}</strong></td>
+                        <td style="padding: 6px;"><code>${sub.code}</code></td>
+                        <td style="padding: 6px;"><span class="status-pill pill-blue">${sub.qty} un</span></td>
+                        <td style="padding: 6px; text-align: right;" class="adm-only">
+                            <button class="btn-action pill-red" style="width:24px; height:24px; font-size:10px;" onclick="deleteMachineSubitem('${sub.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                return `
+                    <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                            <h5 style="color: var(--accent); font-size: 14px; margin:0;">
+                                <i class="fas fa-layer-group"></i> ${item.name} 
+                                <small style="color:var(--text-dim); font-size:12px; font-weight:normal;">(${item.code || '-'})</small>
+                            </h5>
+                            <div class="adm-only" style="display:flex; gap:6px;">
+                                <button class="btn-submit" style="padding: 4px 8px; font-size: 11px;" onclick="addMachineSubitem('${m.id}', '${item.id}')">
+                                    <i class="fas fa-plus"></i> Add Peça / Subitem
+                                </button>
+                                <button class="btn-action pill-red" style="width:26px; height:26px; font-size:11px;" onclick="deleteMachineItem('${item.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        ${itemSubitems.length > 0 ? `
+                            <table style="width:100%; font-size:12px; text-align:left; border-collapse:collapse;">
+                                <thead>
+                                    <tr style="color:var(--text-dim); font-size:11px;">
+                                        <th>Peça / Subitem</th>
+                                        <th>Código Peça</th>
+                                        <th>Qtd</th>
+                                        <th class="adm-only" style="text-align:right;">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${subitemsHTML}</tbody>
+                            </table>
+                        ` : `<p style="font-size:12px; color:var(--text-dim); margin:4px 0;">Nenhum subitem/peça cadastrado neste conjunto.</p>`}
+                    </div>
+                `;
+            }).join('');
+
+            const card = document.createElement('div');
+            card.className = `shelf-card ${isActive}`;
+            card.dataset.id = m.id;
+            card.innerHTML = `
+                <div class="shelf-top" onclick="this.parentElement.classList.toggle('active')">
+                    <div class="shelf-id"><i class="fas fa-industry"></i></div>
+                    <div class="shelf-info">
+                        <h4>${m.name} <small style="color:var(--text-dim);">(${m.code || '-'})</small></h4>
+                        <p>${mItems.length} conjuntos de peças</p>
+                    </div>
+                    <button class="btn-action pill-red adm-only" style="width:auto; padding:4px 10px; font-size:12px;" onclick="event.stopPropagation(); deleteMachine('${m.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="shelf-details" style="padding-top: 10px;">
+                    <button class="btn-submit adm-only" style="width:100%; padding:8px; font-size:12px; background:rgba(255,255,255,0.05); border:1px dashed var(--text-dim); color:white;" onclick="addMachineItem('${m.id}')">
+                        <i class="fas fa-plus"></i> Adicionar Item / Conjunto
+                    </button>
+                    ${itemsHTML}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    };
+
+    onSnapshot(qM, snap => { machinesArr = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTree(); });
+    onSnapshot(qI, snap => { itemsArr = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTree(); });
+    onSnapshot(qS, snap => { subitemsArr = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTree(); });
+}
+
+// ==========================================
+// PRATELEIRAS DINÂMICAS (FIREBASE)
+// ==========================================
+const shelvesCollection = collection(db, "shelves");
+
+const formShelf = document.getElementById('form-shelf') || document.getElementById('shelf-form');
+if (formShelf) {
+    formShelf.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const nameInput = document.getElementById('shelf-name');
+        if (!nameInput || !nameInput.value.trim()) {
+            alert("Digite o nome da prateleira!");
+            return;
+        }
+
+        try {
+            await addDoc(shelvesCollection, { 
+                name: nameInput.value.trim(), 
+                createdAt: Date.now() 
+            });
+            nameInput.value = '';
+            alert("Prateleira salva com SUCESSO no Firebase!");
+        } catch (error) {
+            console.error("Erro ao salvar prateleira:", error);
+            alert("Erro ao salvar prateleira no Firebase: " + error.message);
+        }
+    });
+}
+
+window.deleteShelf = async (id) => {
+    if(confirm("Excluir esta prateleira?")) {
+        await deleteDoc(doc(db, "shelves", id));
+    }
+};
+
+// Preenche o <select> com 1-14 + Dinâmicas
+function populateShelfSelect(dynamicSnap) {
+    const select = document.getElementById('p-shelf');
+    if (!select) return;
+
+    const currentVal = select.value;
+    select.innerHTML = ''; 
+
+    // 1. Adiciona as 14 prateleiras fixas
+    for (let i = 1; i <= 14; i++) {
+        const opt = document.createElement('option');
+        const num = i.toString().padStart(2, '0');
+        opt.value = i; 
+        opt.textContent = `Prateleira ${num}`;
+        select.appendChild(opt);
+    }
+
+    // 2. Adiciona as prateleiras dinâmicas do Firebase
+    if (dynamicSnap) {
+        dynamicSnap.forEach((docSnap) => {
+            const shelf = docSnap.data();
+            const opt = document.createElement('option');
+            opt.value = docSnap.id; 
+            opt.textContent = shelf.name;
+            select.appendChild(opt);
+        });
+    }
+
+    if (currentVal) select.value = currentVal;
+}
+
+// Escuta em tempo real do banco
+function listenToDynamicShelves() {
+    const q = query(shelvesCollection, orderBy("createdAt", "asc"));
+    
+    onSnapshot(q, (snapshot) => {
+        currentDynamicShelves = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Atualiza a lista suspensa no cadastro
+        populateShelfSelect(snapshot);
+
+        // Atualiza a tela central
+        renderAll();
+    });
+}
+
+// Inicia os ouvintes e o aplicativo
+listenToDynamicShelves();
+listenToMachinesTree();
 init();

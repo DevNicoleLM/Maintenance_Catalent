@@ -12,15 +12,53 @@
     --green: #22c55e;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Segoe UI', Roboto, sans-serif; 
+}
 
-body { background-color: var(--bg-dark); color: var(--text-main); overflow: hidden; }
+body { 
+    background-color: var(--bg-dark); 
+    color: var(--text-main); 
+    overflow: hidden; 
+}
 
 /* Login Page */
-.auth-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1e293b 0%, #0b1120 100%); padding: 20px; }
-.login-card { background: var(--bg-card); padding: 40px; border-radius: 24px; width: 100%; max-width: 400px; border: 1px solid var(--border); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-.login-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
-.logo-icon { background: var(--accent-gradient); width: 45px; height: 45px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
+.auth-wrapper { 
+    height: 100vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background: radial-gradient(circle at center, #1e293b 0%, #0b1120 100%); 
+    padding: 20px; 
+}
+.login-card { 
+    background: var(--bg-card); 
+    padding: 40px; 
+    border-radius: 24px; 
+    width: 100%; 
+    max-width: 400px; 
+    border: 1px solid var(--border); 
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
+}
+.login-header { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    margin-bottom: 30px; 
+}
+.logo-icon { 
+    background: var(--accent-gradient); 
+    width: 45px; 
+    height: 45px; 
+    border-radius: 12px; 
+    display: grid; 
+    place-items: center; 
+    font-size: 20px; 
+    flex-shrink: 0; 
+}
 .login-header h1 { font-size: 18px; }
 .login-header h1 span { display: block; color: var(--text-dim); font-size: 12px; font-weight: normal; }
 .input-group { margin-bottom: 20px; }
@@ -113,8 +151,12 @@ body { background-color: var(--bg-dark); color: var(--text-main); overflow: hidd
 
 /* Utilities */
 .mt-20 { margin-top: 20px; }
-.adm-only { display: none; }
-body.is-adm .adm-only { display: flex !important; }
+
+/* Controle de visibilidade do ADM ajustado para não quebrar tabelas/painéis */
+.adm-only { display: none !important; }
+body.is-adm .adm-only { display: block !important; }
+body.is-adm .menu-item.adm-only, 
+body.is-adm div.adm-only:not(.data-panel) { display: flex !important; }
 
 /* Botões de Movimentação */
 .btn-action { width: 30px; height: 30px; border-radius: 8px; border: none; color: white; cursor: pointer; display: grid; place-items: center; transition: 0.2s; }
@@ -130,7 +172,7 @@ body.is-adm .adm-only { display: flex !important; }
 .filter-group select option { background: var(--bg-dark); color: #fff; }
 
 /* ==========================================================================
-   celular
+   DISPOSITIVOS MÓVEIS (CELULAR)
    ========================================================================== */
 @media (max-width: 768px) {
     
@@ -148,10 +190,11 @@ body.is-adm .adm-only { display: flex !important; }
     .sidebar-brand { margin-bottom: 5px; justify-content: center; font-size: 15px !important; }
     .logo-icon-sm { padding: 6px; }
     .sidebar-menu { display: flex; flex-direction: row; gap: 5px; overflow-x: auto; width: 100%; padding-bottom: 5px; white-space: nowrap; }
-    .sidebar-menu::-webkit-scrollbar { height: 4px; } /* Scrollbar fininha */
+    .sidebar-menu::-webkit-scrollbar { height: 4px; }
     .menu-item { padding: 8px 12px !important; font-size: 11px !important; border-radius: 8px !important; flex-direction: column; gap: 4px; }
     .menu-item i { font-size: 14px; }
-    /* ---  USUÁRIO E LOGOUT MOBILE --- */
+
+    /* --- USUÁRIO E LOGOUT MOBILE --- */
     .sidebar-user { 
         display: flex !important; 
         padding: 5px 0 0 0 !important; 
@@ -160,44 +203,42 @@ body.is-adm .adm-only { display: flex !important; }
     
     .user-info-card { 
         width: 100%; 
-        justify-content: space-between; /* Joga o avatar pra um lado e o logout pro outro */
+        justify-content: space-between;
         padding: 5px 10px !important; 
         background: transparent !important;
     }
     
-    .user-text { 
-        display: none; /* Esconde só os textos para caber certinho */
-    }
+    .user-text { display: none; }
     
     #btn-logout { 
-        background: rgba(239, 68, 68, 0.1); /* Dá um fundo vermelho discreto pro botão */
+        background: rgba(239, 68, 68, 0.1); 
         color: var(--red); 
         padding: 6px 12px; 
         border-radius: 8px; 
         font-size: 14px !important;
     }
 
-    /*  CONTEÚDO PRINCIPAL  */
+    /* CONTEÚDO PRINCIPAL */
     .main-content { padding: 12px !important; flex: 1; }
-    .content-header { flex-direction: column; align-items: stretch !important; gap: 10px; margin-bottom: 15px !important; }
-    #current-page-title { font-size: 18px !important; text-align: center; margin-bottom: 5px; }
+    .content-header { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; margin-bottom: 15px !important; }
+    #current-page-title { font-size: 16px !important; text-align: left !important; font-weight: bold; }
     .search-box { width: 100% !important; padding: 6px 12px !important; }
     .search-box input { font-size: 12px !important; }
     .section-subtitle { text-align: center; margin-top: 0; margin-bottom: 15px; }
 
-    /* --- MINI KPIS */
+    /* MINI KPIS */
     .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; margin-bottom: 15px !important; }
     .kpi-card { padding: 10px !important; gap: 10px !important; align-items: center; text-align: left; }
     .kpi-icon { width: 32px !important; height: 32px !important; font-size: 14px !important; }
     .kpi-card h2 { font-size: 16px !important; margin-top: 2px !important; }
     .kpi-card span { font-size: 9px !important; }
 
-    /* --- TABELAS ULTRA COMPACTAS (COM SCROLL HORIZONTAL) --- */
-    .table-wrapper, .history-table-wrapper { overflow-x: auto !important; margin-top: 5px; border-radius: 8px; -webkit-overflow-scrolling: touch; }
+    /* TABELAS PADRÃO (COM SCROLL HORIZONTAL) */
+    .table-wrapper { overflow-x: auto !important; margin-top: 5px; border-radius: 8px; -webkit-overflow-scrolling: touch; }
     .main-table th, .main-table td { padding: 10px !important; font-size: 11px !important; }
     .btn-action { width: 26px !important; height: 26px !important; font-size: 11px !important; }
 
-    /* --- FORMULÁRIOS ENXUTOS --- */
+    /* FORMULÁRIOS ENXUTOS */
     .grid-form { grid-template-columns: 1fr !important; gap: 10px !important; padding: 15px !important; }
     .f-group label { font-size: 11px !important; margin-bottom: 4px !important; }
     .f-group input, .f-group select { padding: 10px !important; font-size: 13px !important; }
@@ -205,36 +246,14 @@ body.is-adm .adm-only { display: flex !important; }
     .form-btns { flex-direction: column; gap: 8px; margin-top: 10px; }
     .form-btns button { width: 100% !important; padding: 10px !important; font-size: 13px !important; }
 
-    /* --- PRATELEIRAS DO ALMOXARIFADO --- */
+    /* PRATELEIRAS DO ALMOXARIFADO */
     .shelves-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
     .shelf-top { padding: 10px !important; }
     .shelf-id { width: 30px !important; height: 30px !important; font-size: 12px !important; }
     .shelf-info h4 { font-size: 13px !important; }
     .shelf-info p { font-size: 11px !important; }
 
-    /* ==========================================================================
-       MUDANÇA DE TABELA PARA LISTA VERTICAL (FEED) - MOBILE
-       ========================================================================== */
-
-    /* Ajusta o topo da página para não esmagar os elementos */
-    .content-header {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 12px !important;
-        margin-bottom: 15px !important;
-    }
-
-    #current-page-title {
-        font-size: 16px !important;
-        text-align: left !important;
-        font-weight: bold;
-    }
-
-   /* ==========================================================================
-       CORREÇÃO DEFINITIVA DO HISTÓRICO NO CELULAR
-       ========================================================================== */
-    
-    /* 1. Força o painel inteiro a empilhar tudo verticalmente e ocupar 100% */
+    /* --- HISTÓRICO EM CARDS VERTICAIS (APENAS PARA O HISTÓRICO) --- */
     #dashboard .data-panel.mt-20 {
         display: flex !important;
         flex-direction: column !important;
@@ -243,7 +262,6 @@ body.is-adm .adm-only { display: flex !important; }
         box-sizing: border-box !important;
     }
 
-    /* 2. Ajusta o título para ocupar a largura toda */
     .panel-header {
         width: 100% !important;
         border-bottom: none !important;
@@ -251,7 +269,6 @@ body.is-adm .adm-only { display: flex !important; }
         padding: 0 !important;
     }
 
-    /* 3. Filtros empilhados e confortáveis no topo */
     .history-filters {
         display: flex !important;
         flex-direction: column !important;
@@ -269,23 +286,23 @@ body.is-adm .adm-only { display: flex !important; }
         border-radius: 8px !important;
     }
 
-    /* 4. Transforma a tabela em lista */
+    /* Isolando o card feed apenas na tabela do Histórico */
     .history-table-wrapper {
         width: 100% !important;
-        overflow: hidden !important; /* Sem scroll horizontal, tudo desce verticalmente */
+        overflow: hidden !important;
     }
 
-    .main-table, .main-table tbody {
+    .history-table-wrapper .main-table, 
+    .history-table-wrapper .main-table tbody {
         display: block !important;
         width: 100% !important;
     }
 
-    .main-table thead {
-        display: none !important; /* Some com o cabeçalho de colunas do PC */
+    .history-table-wrapper .main-table thead {
+        display: none !important;
     }
 
-    /* Cada linha vira uma caixinha (Card) individual */
-    .main-table tr {
+    .history-table-wrapper .main-table tr {
         display: flex !important;
         flex-direction: column !important; 
         background: var(--bg-card) !important;
@@ -298,10 +315,9 @@ body.is-adm .adm-only { display: flex !important; }
         box-sizing: border-box !important;
     }
 
-    /* Cada item dentro do card (Data, usuário, etc) */
-    .main-table td {
+    .history-table-wrapper .main-table td {
         display: flex !important;
-        justify-content: space-between !important; /* Título na esquerda, Dado na direita */
+        justify-content: space-between !important;
         align-items: center !important;
         width: 100% !important;
         border: none !important;
@@ -310,10 +326,10 @@ body.is-adm .adm-only { display: flex !important; }
         color: white !important;
     }
 
-    /* Injeta o nome do dado na esquerda pra fazer sentido */
-    .main-table td:nth-child(1)::before { content: "Data/Hora"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
-    .main-table td:nth-child(2)::before { content: "Usuário"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
-    .main-table td:nth-child(3)::before { content: "Ação"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
-    .main-table td:nth-child(4)::before { content: "Produto"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
-    .main-table td:nth-child(5)::before { content: "QTD"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    /* Rótulos automáticos para o feed do histórico */
+    .history-table-wrapper .main-table td:nth-child(1)::before { content: "Data/Hora"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    .history-table-wrapper .main-table td:nth-child(2)::before { content: "Usuário"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    .history-table-wrapper .main-table td:nth-child(3)::before { content: "Ação"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    .history-table-wrapper .main-table td:nth-child(4)::before { content: "Produto"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
+    .history-table-wrapper .main-table td:nth-child(5)::before { content: "QTD"; color: var(--text-dim); font-weight: bold; font-size: 11px; }
 }

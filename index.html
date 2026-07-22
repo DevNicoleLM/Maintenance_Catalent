@@ -59,6 +59,9 @@
                 <button class="menu-item" data-target="almoxarifado">
                     <i class="fa-solid fa-warehouse"></i> Almoxarifado
                 </button>
+                <button class="menu-item" data-target="machines">
+    <i class="fa-solid fa-cogs"></i> Máquinas
+</button>
                 <button class="menu-item adm-only" data-target="cadastrar-produto">
                     <i class="fa-solid fa-plus"></i> Cadastrar Produto
                 </button>
@@ -170,9 +173,25 @@
             </section>
 
             <section id="almoxarifado" class="main-section">
-                <p class="section-subtitle">Prateleiras e produtos vinculados</p>
-                <div class="shelves-grid" id="shelves-container"></div>
-            </section>
+    <p class="section-subtitle">Prateleiras e produtos vinculados</p>
+
+    <!-- NOVO: Formulário para criar novas prateleiras (visível apenas para ADM) -->
+    <div class="data-panel mt-20 adm-only" style="margin-bottom: 20px;">
+        <div class="panel-header"><i class="fas fa-layer-group"></i> Nova Prateleira</div>
+        <form id="form-shelf" class="grid-form">
+            <div class="f-group span-2">
+                <label>Nome ou Número da Prateleira</label>
+                <input type="text" id="shelf-name" placeholder="Ex: Prateleira 15" required>
+            </div>
+            <div class="form-btns">
+                <button type="submit" class="btn-submit">Criar Prateleira</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Onde o JS injeta as prateleiras dinâmicas -->
+    <div class="shelves-grid" id="shelves-container"></div>
+</section>
 
             <section id="cadastrar-produto" class="main-section">
                 <p class="section-subtitle">Adicione novos itens ao estoque</p>
@@ -197,6 +216,30 @@
                     </form>
                 </div>
             </section>
+           <!-- SEÇÃO MÁQUINAS -->
+<section id="machines" class="main-section">
+    <!-- Formulário para Criar Nova Máquina -->
+    <div class="data-panel adm-only" style="margin-bottom: 20px;">
+        <div class="panel-header"><i class="fas fa-cogs"></i> Cadastrar Nova Máquina</div>
+        <form id="form-machine" class="grid-form">
+            <div class="f-group">
+                <label>Nome da Máquina</label>
+                <input type="text" id="m-name" placeholder="Ex: Injetora Romi 01" required>
+            </div>
+            <div class="f-group">
+                <label>Código / Tag (Opcional)</label>
+                <input type="text" id="m-code" placeholder="Ex: INJ-01">
+            </div>
+            <div class="form-btns">
+                <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> Cadastrar Máquina</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Container do Tree-View de Máquinas -> Itens -> Subitens -->
+    <div id="machines-tree-container"></div>
+</section>
+            
 
             <section id="produtos" class="main-section">
                 <p class="section-subtitle">Lista completa de itens cadastrados</p>
