@@ -1,4 +1,4 @@
-WEBSITE: https://devnicolelm.github.io/Maintenance_Catalent/
+
 # 📦 Maintenance Inventory System | Catalent
 
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
@@ -8,6 +8,7 @@ WEBSITE: https://devnicolelm.github.io/Maintenance_Catalent/
 > **Project Status:** 🚀 Active Development (v2.0)
 
 This system was custom-built for the maintenance department at **Catalent Pharma Solutions**. It aims to modernize part-tracking and stock control, ensuring that production lines never face downtime due to missing critical components.
+WEBSITE: https://devnicolelm.github.io/Maintenance_Catalent/
 
 ---
 
