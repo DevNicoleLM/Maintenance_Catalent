@@ -23,6 +23,10 @@ WEBSITE: https://devnicolelm.github.io/Maintenance_Catalent/
 - **⚙️ Dynamic Configuration:** Custom threshold limits for each individual part, accounting for different lead times and criticality.
 - **💾 Architecture Evolution:** Upgraded from local LocalStorage prototyping to a live Firebase Firestore database integration, ensuring secure data persistence and real-time updates for the warehouse management workflow.
 
+## 👨‍💻 About the Developer
 
-👨‍💻 About the Developer
-This project represents my first professional application within Catalent Pharma Solutions. I am leveraging this challenge to solidify my front-end architecture skills while solving real-world industrial logistics and supply chain problems.
+This project is developed by **Nicole Oliveira**, a first-year Computer Science student at **Michigan State University**. 
+
+With a strong technical background, Nicole completed a Technical Degree in Systems Development at **SENAI** and has actively participated in several robotics competitions, which fueled her passion for engineering and software development.
+
+This project represents her first professional application within **Catalent Pharma Solutions**, leveraging this challenge to solidify her front-end architecture skills while solving real-world industrial logistics and supply chain problems.
