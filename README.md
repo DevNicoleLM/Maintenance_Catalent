@@ -21,7 +21,7 @@ WEBSITE: https://devnicolelm.github.io/Maintenance_Catalent/
   - 🟡 **Yellow:** Cautionary level (Restock soon).
   - 🟢 **Green:** Healthy stock levels.
 - **⚙️ Dynamic Configuration:** Custom threshold limits for each individual part, accounting for different lead times and criticality.
-- **💾 Data Persistence:** Built using *LocalStorage* to keep inventory data secure on the client side without needing a heavy database setup for the prototype phase.
+- **💾 Architecture Evolution:** Upgraded from local LocalStorage prototyping to a live Firebase Firestore database integration, ensuring secure data persistence and real-time updates for the warehouse management workflow.
 
 ## 🚀 Getting Started
 
